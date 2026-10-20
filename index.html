@@ -3,654 +3,1113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descobre o Teu Arquétipo - Teste de Personalidade</title>
-
-    <!-- Tailwind CSS CDN -->
+    <title>PersonaMatch - Descobre a Tua Personalidade</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0f3ff',
-                            100: '#e0e7ff',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            900: '#312e81',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Google Fonts & FontAwesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Chart.js para visualização gráfica dos traços -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s, color 0.3s;
+            background: radial-gradient(circle at top left, #0f172a, #020617);
+            color: #f8fafc;
+            min-height: 100vh;
         }
-
-        /* Glassmorphism Backgrounds */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
         .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .dark .glass-card {
-            background: rgba(17, 24, 39, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        /* Transições suave para cartões */
-        .slide-enter {
-            opacity: 0;
-            transform: translateX(30px);
-        }
-        .slide-enter-active {
-            opacity: 1;
-            transform: translateX(0);
-            transition: all 0.35s ease-out;
-        }
-
-        /* Opções personalizadas da escala */
-        .option-btn {
-            transition: all 0.2s ease-in-out;
-        }
-        .option-btn:hover {
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.25);
+        }
+        .glass-card.selected {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #a855f7, #6366f1, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .btn-glow {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.7);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-50 via-slate-100 to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+<body class="flex flex-col min-h-screen text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
 
     <!-- Header / Navbar -->
-    <header class="w-full max-w-5xl mx-auto px-4 py-6 flex justify-between items-center">
-        <div class="flex items-center space-x-3 cursor-pointer" onclick="resetQuiz()">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-                <i class="fa-solid fa-brain text-xl"></i>
+    <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-800 px-4 lg:px-8 py-3.5 flex items-center justify-between">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="showHome()">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-xl font-black shadow-lg shadow-indigo-500/30">
+                <i class="fa-solid fa-masks-theater"></i>
             </div>
-            <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
-                PersonaMatch
-            </span>
+            <div>
+                <span class="text-xl font-bold tracking-tight gradient-text">PersonaMatch</span>
+                <span class="hidden sm:inline-block text-xs text-slate-400 block -mt-1 font-medium">Descobre a tua verdadeira essência</span>
+            </div>
         </div>
 
-        <!-- Botão Dark / Light Mode -->
-        <button id="themeToggle" onclick="toggleTheme()" class="p-3 rounded-full glass-card hover:shadow-md transition-all duration-200 text-slate-600 dark:text-slate-300 focus:outline-none" aria-label="Alternar Tema">
-            <i class="fa-solid fa-moon text-lg dark:hidden"></i>
-            <i class="fa-solid fa-sun text-lg hidden dark:inline"></i>
-        </button>
+        <!-- Auth Controls -->
+        <div id="auth-header-section" class="flex items-center space-x-3">
+            <!-- Dynamic header buttons injected by JS -->
+        </div>
     </header>
 
-    <!-- Content Container Principal -->
-    <main class="w-full max-w-3xl mx-auto px-4 my-auto py-8">
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
-        <!-- 1. TELA DE INÍCIO -->
-        <div id="startScreen" class="glass-card rounded-3xl p-8 md:p-12 shadow-2xl text-center space-y-8 relative overflow-hidden">
-            <!-- Efeito decorativo no fundo -->
-            <div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <!-- Main Container -->
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl flex flex-col justify-center">
 
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-medium text-sm">
-                <i class="fa-solid fa-sparkles"></i> Teste de Arquétipos & Personalidade
+        <!-- VIEW 1: HOME / LANDING PAGE -->
+        <div id="view-home" class="space-y-8 text-center animate-fadeIn">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-indigo-500/30 text-indigo-300 text-sm font-medium">
+                <i class="fa-solid fa-sparkles text-amber-400"></i>
+                <span>18 Perguntas de Autodescoberta Pessoal</span>
             </div>
 
-            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
-                Descobre o teu perfil psicológico dominante
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                Com qual Lenda, Famoso ou Herói de Jogo te <span class="gradient-text">Identificas?</span>
             </h1>
 
-            <p class="text-slate-600 dark:text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                Responde a 8 perguntas breves sobre os teus comportamentos e preferências do dia a dia. Descobre a tua forma natural de pensar, decidir e relacionar com os outros.
+            <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                Aprende mais sobre os teus hábitos, gostos de filmes, robis e maneirismos com o nosso teste interativo e descobre a tua alma gémea da cultura pop!
             </p>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 text-left">
-                <div class="p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 flex items-center space-x-3">
-                    <i class="fa-solid fa-clock text-indigo-500 text-xl"></i>
-                    <div>
-                        <div class="font-semibold text-sm">Rápido e Preciso</div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400">Demora apenas 3 minutos</div>
-                    </div>
+            <!-- Character Highlights Carousel Banner -->
+            <div class="py-6 grid grid-cols-3 sm:grid-cols-6 gap-3 max-w-3xl mx-auto">
+                <div class="glass-panel p-3 rounded-2xl flex flex-col items-center space-y-1 transform hover:scale-105 transition-all">
+                    <span class="text-2xl">⚽</span>
+                    <span class="text-xs font-semibold text-slate-300">C. Ronaldo</span>
                 </div>
-                <div class="p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 flex items-center space-x-3">
-                    <i class="fa-solid fa-bullseye text-purple-500 text-xl"></i>
-                    <div>
-                        <div class="font-semibold text-sm">4 Arquétipos</div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400">Análise de perfil único</div>
-                    </div>
+                <div class="glass-panel p-3 rounded-2xl flex flex-col items-center space-y-1 transform hover:scale-105 transition-all">
+                    <span class="text-2xl">⚔️</span>
+                    <span class="text-xs font-semibold text-slate-300">Geralt</span>
                 </div>
-                <div class="p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 flex items-center space-x-3">
-                    <i class="fa-solid fa-chart-pie text-pink-500 text-xl"></i>
-                    <div>
-                        <div class="font-semibold text-sm">Relatório Visual</div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400">Gráfico de traços detalhado</div>
-                    </div>
+                <div class="glass-panel p-3 rounded-2xl flex flex-col items-center space-y-1 transform hover:scale-105 transition-all">
+                    <span class="text-2xl">🎬</span>
+                    <span class="text-xs font-semibold text-slate-300">Keanu R.</span>
+                </div>
+                <div class="glass-panel p-3 rounded-2xl flex flex-col items-center space-y-1 transform hover:scale-105 transition-all">
+                    <span class="text-2xl">🎤</span>
+                    <span class="text-xs font-semibold text-slate-300">Taylor S.</span>
+                </div>
+                <div class="glass-panel p-3 rounded-2xl flex flex-col items-center space-y-1 transform hover:scale-105 transition-all">
+                    <span class="text-2xl">🏎️</span>
+                    <span class="text-xs font-semibold text-slate-300">A. Senna</span>
+                </div>
+                <div class="glass-panel p-3 rounded-2xl flex flex-col items-center space-y-1 transform hover:scale-105 transition-all">
+                    <span class="text-2xl">🪓</span>
+                    <span class="text-xs font-semibold text-slate-300">Kratos</span>
                 </div>
             </div>
 
-            <div class="pt-6">
-                <button onclick="startQuiz()" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-lg shadow-xl shadow-indigo-500/25 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
-                    Iniciar Teste Agora <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+            <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button onclick="startQuiz()" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-lg btn-glow transition-all flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-play"></i>
+                    <span>Começar o Teste</span>
                 </button>
+                <button id="home-history-btn" onclick="showHistory()" class="hidden w-full sm:w-auto px-6 py-4 rounded-xl glass-panel hover:bg-slate-800 text-slate-200 font-semibold text-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bookmark text-indigo-400"></i>
+                    <span>Ver Resultado Guardado</span>
+                </button>
+            </div>
+
+            <div class="pt-8 text-xs text-slate-500 flex justify-center items-center gap-6">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-lock-open text-indigo-400"></i> Sem login obrigatório</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-clock text-indigo-400"></i> ~4 minutos</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-indigo-400"></i> 100% Anónimo</span>
             </div>
         </div>
 
-        <!-- 2. TELA DO QUESTIONÁRIO -->
-        <div id="quizScreen" class="hidden glass-card rounded-3xl p-6 md:p-10 shadow-2xl space-y-8">
-            <!-- Barra de Progresso e Top Header -->
-            <div class="space-y-3">
-                <div class="flex justify-between items-center text-sm font-semibold">
-                    <span id="questionProgressText" class="text-indigo-600 dark:text-indigo-400">Pergunta 1 de 8</span>
-                    <span id="percentageText" class="text-slate-400">12%</span>
+        <!-- VIEW 2: QUIZ QUESTIONNAIRE -->
+        <div id="view-quiz" class="hidden space-y-6 animate-fadeIn">
+            <!-- Progress Header -->
+            <div class="glass-panel p-5 rounded-2xl space-y-3">
+                <div class="flex justify-between items-center text-sm font-semibold text-slate-300">
+                    <span id="quiz-progress-text" class="text-indigo-400">Pergunta 1 de 18</span>
+                    <span id="quiz-progress-percent" class="text-xs bg-indigo-900/60 px-2.5 py-1 rounded-full text-indigo-300 border border-indigo-700/50">0%</span>
                 </div>
-                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
-                    <div id="progressBar" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 12.5%"></div>
-                </div>
-            </div>
-
-            <!-- Contentor da Pergunta Animado -->
-            <div id="questionCard" class="slide-enter-active space-y-6 min-h-[260px] flex flex-col justify-between">
-                <h2 id="questionText" class="text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-snug">
-                    <!-- Texto da Pergunta entra via JS -->
-                </h2>
-
-                <!-- Opções em Escala Likert de 5 Níveis -->
-                <div class="space-y-3 my-4">
-                    <button onclick="selectOption(5)" class="option-btn w-full p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 bg-white/40 dark:bg-slate-900/40 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/40 text-left font-medium flex items-center justify-between group">
-                        <span class="group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Concordo Totalmente</span>
-                        <i class="fa-solid fa-circle-check text-slate-300 dark:text-slate-700 group-hover:text-indigo-500"></i>
-                    </button>
-                    <button onclick="selectOption(4)" class="option-btn w-full p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 bg-white/40 dark:bg-slate-900/40 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/40 text-left font-medium flex items-center justify-between group">
-                        <span class="group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Concordo Parcialmente</span>
-                        <i class="fa-solid fa-circle-check text-slate-300 dark:text-slate-700 group-hover:text-indigo-500"></i>
-                    </button>
-                    <button onclick="selectOption(3)" class="option-btn w-full p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 bg-white/40 dark:bg-slate-900/40 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/40 text-left font-medium flex items-center justify-between group">
-                        <span class="group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Neutro / Indiferente</span>
-                        <i class="fa-solid fa-circle-check text-slate-300 dark:text-slate-700 group-hover:text-indigo-500"></i>
-                    </button>
-                    <button onclick="selectOption(2)" class="option-btn w-full p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 bg-white/40 dark:bg-slate-900/40 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/40 text-left font-medium flex items-center justify-between group">
-                        <span class="group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Discordo Parcialmente</span>
-                        <i class="fa-solid fa-circle-check text-slate-300 dark:text-slate-700 group-hover:text-indigo-500"></i>
-                    </button>
-                    <button onclick="selectOption(1)" class="option-btn w-full p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 bg-white/40 dark:bg-slate-900/40 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/40 text-left font-medium flex items-center justify-between group">
-                        <span class="group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Discordo Totalmente</span>
-                        <i class="fa-solid fa-circle-check text-slate-300 dark:text-slate-700 group-hover:text-indigo-500"></i>
-                    </button>
+                <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-700/50">
+                    <div id="quiz-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-300 w-0"></div>
                 </div>
             </div>
 
-            <!-- Navegação para pergunta anterior -->
-            <div class="pt-4 flex justify-between items-center border-t border-slate-200/60 dark:border-slate-800/60">
-                <button id="prevBtn" onclick="prevQuestion()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all flex items-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed">
-                    <i class="fa-solid fa-chevron-left text-xs"></i> Anterior
-                </button>
-                <span class="text-xs text-slate-400">Escolha a opção que melhor te descreve</span>
-            </div>
-        </div>
-
-        <!-- 3. TELA DE RESULTADOS -->
-        <div id="resultsScreen" class="hidden space-y-6">
-            <!-- Cartão Principal de Perfil -->
-            <div class="glass-card rounded-3xl p-8 md:p-10 shadow-2xl text-center space-y-6 relative overflow-hidden">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-semibold text-sm">
-                    <i class="fa-solid fa-award"></i> Teu Arquétipo Principal
-                </div>
-
-                <div id="archetypeIconContainer" class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-3xl shadow-xl shadow-indigo-500/30">
-                    <i id="archetypeIcon" class="fa-solid fa-lightbulb"></i>
-                </div>
-
-                <div>
-                    <h2 id="archetitle" class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">
-                        <!-- Nome do perfil -->
+            <!-- Question Card -->
+            <div class="glass-panel p-6 md:p-8 rounded-3xl space-y-6">
+                <div class="space-y-2">
+                    <span id="question-category" class="inline-block text-xs font-bold uppercase tracking-wider text-purple-400 bg-purple-950/50 px-3 py-1 rounded-full border border-purple-800/40">
+                        Hábitos & Estilo de Vida
+                    </span>
+                    <h2 id="question-text" class="text-2xl md:text-3xl font-bold text-white leading-snug">
+                        Como costuma ser o teu sábado à noite ideal?
                     </h2>
-                    <p id="archetagline" class="text-indigo-600 dark:text-indigo-400 font-medium text-lg mt-1">
-                        <!-- Subtítulo -->
-                    </p>
                 </div>
 
-                <p id="archeDescription" class="text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
-                    <!-- Descrição Geral -->
-                </p>
-            </div>
-
-            <!-- Gráfico de Traços de Personalidade -->
-            <div class="glass-card rounded-3xl p-6 md:p-8 shadow-xl space-y-4">
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <i class="fa-solid fa-chart-radar text-indigo-500"></i> Mapeamento de Traços
-                </h3>
-                <div class="relative w-full max-w-md mx-auto h-64 md:h-72">
-                    <canvas id="traitsChart"></canvas>
+                <!-- Answer Options Container -->
+                <div id="options-container" class="grid grid-cols-1 gap-3.5 pt-2">
+                    <!-- Dynamic Answer Options inserted here -->
                 </div>
             </div>
 
-            <!-- Detalhes do Perfil (Grid com 4 Cartões) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Pontos Fortes -->
-                <div class="glass-card rounded-2xl p-6 shadow-md border-l-4 border-emerald-500 space-y-3">
-                    <div class="flex items-center space-x-3 text-emerald-600 dark:text-emerald-400">
-                        <i class="fa-solid fa-shield-halved text-xl"></i>
-                        <h4 class="font-bold text-lg">Pontos Fortes</h4>
-                    </div>
-                    <ul id="strengthsList" class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                        <!-- Lista JS -->
-                    </ul>
-                </div>
-
-                <!-- Áreas de Melhoria -->
-                <div class="glass-card rounded-2xl p-6 shadow-md border-l-4 border-amber-500 space-y-3">
-                    <div class="flex items-center space-x-3 text-amber-600 dark:text-amber-400">
-                        <i class="fa-solid fa-seedling text-xl"></i>
-                        <h4 class="font-bold text-lg">Áreas de Crescimento</h4>
-                    </div>
-                    <ul id="improvementsList" class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                        <!-- Lista JS -->
-                    </ul>
-                </div>
-
-                <!-- Estilo de Comunicação -->
-                <div class="glass-card rounded-2xl p-6 shadow-md border-l-4 border-indigo-500 space-y-3">
-                    <div class="flex items-center space-x-3 text-indigo-600 dark:text-indigo-400">
-                        <i class="fa-solid fa-comments text-xl"></i>
-                        <h4 class="font-bold text-lg">Estilo de Comunicação</h4>
-                    </div>
-                    <p id="communicationStyle" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                        <!-- Texto JS -->
-                    </p>
-                </div>
-
-                <!-- Ambiente Ideal -->
-                <div class="glass-card rounded-2xl p-6 shadow-md border-l-4 border-purple-500 space-y-3">
-                    <div class="flex items-center space-x-3 text-purple-600 dark:text-purple-400">
-                        <i class="fa-solid fa-briefcase text-xl"></i>
-                        <h4 class="font-bold text-lg">Ambiente Ideal</h4>
-                    </div>
-                    <p id="idealEnvironment" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                        <!-- Texto JS -->
-                    </p>
-                </div>
-            </div>
-
-            <!-- Botões de Ação Final -->
-            <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                <button onclick="copyResults()" class="flex-1 py-4 px-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-800 dark:text-slate-200 font-bold flex items-center justify-center gap-2 shadow-md transition-all">
-                    <i class="fa-solid fa-share-nodes text-indigo-500"></i> Copiar / Partilhar Resultado
+            <!-- Quiz Navigation -->
+            <div class="flex justify-between items-center pt-2">
+                <button id="prev-btn" onclick="prevQuestion()" class="px-5 py-3 rounded-xl glass-panel hover:bg-slate-800 text-slate-300 font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Anterior</span>
                 </button>
-                <button onclick="resetQuiz()" class="flex-1 py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 transition-all">
-                    <i class="fa-solid fa-rotate-right"></i> Refazer o Teste
+                <button id="next-btn" onclick="nextQuestion()" disabled class="px-7 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 btn-glow">
+                    <span>Próxima</span>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </button>
+            </div>
+        </div>
+
+        <!-- VIEW 3: RESULT PAGE -->
+        <div id="view-result" class="hidden space-y-8 animate-fadeIn">
+            <div class="glass-panel p-6 md:p-10 rounded-3xl space-y-8 border border-indigo-500/20 shadow-2xl relative overflow-hidden">
+                <!-- Glowing Background Blur Accent -->
+                <div class="absolute -top-20 -right-20 w-64 h-64 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Result Header -->
+                <div class="text-center space-y-2">
+                    <span class="inline-block text-xs font-extrabold uppercase tracking-widest text-indigo-400 bg-indigo-950/80 px-4 py-1.5 rounded-full border border-indigo-800/60">
+                        Resultado do Teu Perfil
+                    </span>
+                    <h2 class="text-3xl md:text-5xl font-black text-white">A Tua Alma Gémea é...</h2>
+                </div>
+
+                <!-- Character Card Hero -->
+                <div class="flex flex-col md:flex-row items-center gap-8 bg-slate-900/80 p-6 md:p-8 rounded-2xl border border-slate-700/60 relative">
+                    <!-- Character Avatar Container -->
+                    <div class="relative shrink-0">
+                        <div id="res-char-avatar-bg" class="w-36 h-36 md:w-44 md:h-44 rounded-2xl flex items-center justify-center text-7xl md:text-8xl shadow-2xl border-2 border-indigo-400/30 bg-gradient-to-br from-indigo-900/50 to-purple-900/50">
+                            <span id="res-char-icon">⚽</span>
+                        </div>
+                        <span id="res-category-badge" class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-indigo-300/30 whitespace-nowrap">
+                            Desporto
+                        </span>
+                    </div>
+
+                    <!-- Character Summary -->
+                    <div class="space-y-3 text-center md:text-left flex-grow">
+                        <div>
+                            <h3 id="res-char-name" class="text-3xl md:text-4xl font-extrabold text-white">Cristiano Ronaldo</h3>
+                            <p id="res-char-title" class="text-indigo-400 font-medium text-lg">O Perfeccionista Imparável</p>
+                        </div>
+                        <blockquote id="res-char-quote" class="italic text-slate-300 text-sm border-l-2 border-indigo-500 pl-3 py-0.5 text-left bg-indigo-950/20 rounded-r-lg">
+                            "A dedicação supera o talento quando o talento não se dedica."
+                        </blockquote>
+                        <div id="res-char-tags" class="flex flex-wrap gap-2 justify-center md:justify-start pt-1">
+                            <!-- Dynamic Tag Badges -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personality Match Description -->
+                <div class="space-y-4">
+                    <h4 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-puzzle-piece text-indigo-400"></i>
+                        Por que razão te identificas com este perfil?
+                    </h4>
+                    <p id="res-char-description" class="text-slate-300 leading-relaxed text-base md:text-lg bg-slate-900/40 p-5 rounded-2xl border border-slate-800">
+                        Possuis uma determinação invejável e um foco implacável nos teus objetivos. Não aceitas o segundo lugar e trabalhas diariamente com disciplina e paixão.
+                    </p>
+                </div>
+
+                <!-- Personality Trait Breakdown Bars -->
+                <div class="space-y-4 pt-2">
+                    <h4 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-chart-simple text-indigo-400"></i>
+                        O Teu Desdobramento de Traços
+                    </h4>
+                    <div id="res-traits-bars" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Dynamic Trait Bars -->
+                    </div>
+                </div>
+
+                <!-- Actions Footer -->
+                <div class="pt-6 border-t border-slate-800 flex flex-col sm:flex-row gap-4 justify-between items-center">
+                    <button onclick="startQuiz()" class="w-full sm:w-auto px-6 py-3.5 rounded-xl glass-panel hover:bg-slate-800 text-slate-200 font-semibold transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Repetir o Teste</span>
+                    </button>
+                    
+                    <div class="flex w-full sm:w-auto gap-3">
+                        <button onclick="shareResult()" class="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-share-nodes"></i>
+                            <span>Partilhar</span>
+                        </button>
+                        <button id="save-to-profile-btn" onclick="saveResultToProfile()" class="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-all btn-glow flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-bookmark"></i>
+                            <span>Guardar no Perfil</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
     </main>
 
-    <!-- Footer -->
-    <footer class="w-full text-center py-6 text-xs text-slate-400 dark:text-slate-600">
-        <p>© 2026 PersonaMatch • Desenvolvido com foco em UX/UI e Psicologia Comportamental</p>
-    </footer>
+    <!-- AUTH MODAL (LOGIN / REGISTER) -->
+    <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md hidden p-4">
+        <div class="glass-panel w-full max-w-md p-6 md:p-8 rounded-3xl space-y-6 border border-slate-700/80 shadow-2xl relative">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
 
-    <!-- Toast Notification para Ações (ex: Copiar) -->
-    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-5 py-3 rounded-xl shadow-2xl font-medium text-sm flex items-center space-x-2 transition-all duration-300 z-50">
-        <i class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600"></i>
-        <span id="toastMessage">Resultado copiado para a área de transferência!</span>
+            <div class="text-center space-y-1">
+                <h3 id="auth-modal-title" class="text-2xl font-bold text-white">Entrar na Conta</h3>
+                <p class="text-sm text-slate-400">Guarda o teu histórico de testes e personagens</p>
+            </div>
+
+            <!-- Login / Register Tab Switch -->
+            <div class="flex p-1 bg-slate-900/80 rounded-xl border border-slate-800">
+                <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition-all">Login</button>
+                <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition-all">Criar Conta</button>
+            </div>
+
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Nome de Utilizador</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-500"></i>
+                        <input type="text" id="auth-username" required placeholder="ex: alex_2026" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Palavra-passe</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-slate-500"></i>
+                        <input type="password" id="auth-password" required placeholder="••••••••" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
+                    </div>
+                </div>
+
+                <button type="submit" id="auth-submit-btn" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-all btn-glow text-sm">
+                    Entrar
+                </button>
+            </form>
+
+            <div class="text-center pt-2 border-t border-slate-800">
+                <p class="text-xs text-slate-400">Não queres criar conta? Podes continuar como <button onclick="closeAuthModal()" class="text-indigo-400 font-semibold hover:underline">Visitante</button>.</p>
+            </div>
+        </div>
     </div>
 
-    <!-- Script de Lógica do Questionário e Perfis -->
+    <!-- Footer -->
+    <footer class="mt-auto py-6 border-t border-slate-800/80 text-center text-xs text-slate-500 space-y-1">
+        <p>PersonaMatch &copy; 2026 — Descobre a tua personalidade com figuras marcantes do desporto, cinema e gaming.</p>
+        <p class="text-slate-600">Site interativo sem fins lucrativos.</p>
+    </footer>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
     <script>
-        // Pergunta e Pontuação dos 4 Traços:
-        // A: Analítico/Estratégico | C: Criativo/Inovador | E: Empático/Protetor | L: Líder/Visionário
-        const questions = [
+        // ==========================================
+        // DATA STRUCTURES: CHARACTERS & QUESTIONS
+        // ==========================================
+
+        /* Trait Dimensions:
+           EXT: Extrovertido (+) vs Reservado (-)
+           CRT: Criativo/Intuitivo (+) vs Analítico/Prático (-)
+           DRV: Determinado/Ambicioso (+) vs Calmo/Relaxado (-)
+           EMP: Empático/Emocional (+) vs Racional/Lógico (-)
+        */
+
+        const CHARACTERS = [
             {
-                text: "Quando enfrento um problema complexo, prefiro analisar dados detalhados antes de tomar qualquer decisão.",
-                trait: "A"
+                id: 'cronaldo',
+                name: 'Cristiano Ronaldo',
+                title: 'O Perfeccionista Imparável',
+                category: 'Desporto',
+                categoryIcon: '⚽',
+                icon: '👑',
+                quote: '"A dedicação e o trabalho árduo superam qualquer obstáculo."',
+                tags: ['Determinado', 'Perfeccionista', 'Focado', 'Líder'],
+                description: 'És movido por uma ambição gigantesca e uma ética de trabalho inabalável. Não aceitas o segundo lugar e procuras ativamente ultrapassar os teus próprios limites. Para ti, o sucesso constrói-se com disciplina e foco diário.',
+                profile: { EXT: 4, CRT: -2, DRV: 5, EMP: -1 }
             },
             {
-                text: "Costumo gerar ideias originais e fora da caixa, procurando soluções não convencionais.",
-                trait: "C"
+                id: 'keanu',
+                name: 'Keanu Reeves',
+                title: 'O Humilde & Empático',
+                category: 'Famoso',
+                categoryIcon: '🎬',
+                icon: '🕶️',
+                quote: '"Simplicidade e compaixão valem mais do que qualquer estatuto."',
+                tags: ['Empático', 'Calmo', 'Reservado', 'Generoso'],
+                description: 'Tens uma alma profundamente compassiva e serena. Preferes manter a humildade e tratar todos com respeito genuíno, independentemente do teu sucesso. Sabes dar valor ao essencial da vida sem preciosismos.',
+                profile: { EXT: -4, CRT: 2, DRV: -1, EMP: 5 }
             },
             {
-                text: "Priorizo o bem-estar e a harmonia das pessoas ao meu redor em relação a prazos ou métricas rígidas.",
-                trait: "E"
+                id: 'geralt',
+                name: 'Geralt de Rivia',
+                title: 'O Lobo Solitário & Prático',
+                category: 'Jogo',
+                categoryIcon: '🎮',
+                icon: '⚔️',
+                quote: '"Gosto de manter as coisas simples e resolver os problemas sem rodeios."',
+                tags: ['Prático', 'Reservado', 'Protetor', 'Direto'],
+                description: 'És um solucionador de problemas direto, realista e independente. Embora por vezes pareças distante ou pragmático, tens um código moral forte e proteges fielmente quem te é próximo.',
+                profile: { EXT: -5, CRT: -3, DRV: 3, EMP: -2 }
             },
             {
-                text: "Sinto-me confortável a assumir o controlo de projetos e a guiar a equipa em direção a metas ambiciosas.",
-                trait: "L"
+                id: 'taylor',
+                name: 'Taylor Swift',
+                title: 'A Criativa & Estratégica',
+                category: 'Famoso',
+                categoryIcon: '🎤',
+                icon: '✨',
+                quote: '"A criatividade é transformar histórias reais em algo inesquecível."',
+                tags: ['Criativa', 'Estratégica', 'Expressiva', 'Detalhista'],
+                description: 'A tua imaginação e capacidade de expressar emoções são ímpares. Consegues transformar vivências do dia a dia em projetos brilhantes e tens uma visão de planeamento a longo prazo invulgar.',
+                profile: { EXT: 3, CRT: 5, DRV: 3, EMP: 3 }
             },
             {
-                text: "Aprecio a ordem, lógica e a otimização de sistemas para evitar falhas ou imprevistos.",
-                trait: "A"
+                id: 'senna',
+                name: 'Ayrton Senna',
+                title: 'O Passional & Dedicado',
+                category: 'Desporto',
+                categoryIcon: '🏎️',
+                icon: '🏆',
+                quote: '"No que diz respeito ao empenho e à paixão, não há meio termo."',
+                tags: ['Passional', 'Dedicado', 'Focado', 'Espiritual'],
+                description: 'Vives a vida com uma intensidade e paixão contagiantes. Quando te entregas a um objetivo ou gosto, fazes de alma e coração, demonstrando uma fé e precisão admiráveis.',
+                profile: { EXT: 2, CRT: 3, DRV: 5, EMP: 2 }
             },
             {
-                text: "Adapto-me facilmente a mudanças repentinas e gosto de experimentar coisas totalmente novas.",
-                trait: "C"
+                id: 'musk',
+                name: 'Elon Musk',
+                title: 'O Visionário & Arrojado',
+                category: 'Famoso',
+                categoryIcon: '🚀',
+                icon: '⚡',
+                quote: '"Prefiro ser otimista e falhar do que ser pessimista e ter razão."',
+                tags: ['Visionário', 'Analítico', 'Inovador', 'Arrojado'],
+                description: 'Pensas constantemente no futuro e recusas-te a seguir padrões convencionais. Amas resolver desafios lógicos e complexos e tens gosto em arriscar em ideias ousadas.',
+                profile: { EXT: 2, CRT: 5, DRV: 4, EMP: -4 }
             },
             {
-                text: "Tenho facilidade em perceber o estado emocional das pessoas e oferecer apoio intuitivo.",
-                trait: "E"
+                id: 'kratos',
+                name: 'Kratos',
+                title: 'O Determinado & Protetor',
+                category: 'Jogo',
+                categoryIcon: '🎮',
+                icon: '🪓',
+                quote: '"Comanda o teu próprio destino com disciplina e força."',
+                tags: ['Resiliente', 'Disciplinado', 'Focado', 'Protetor'],
+                description: 'Enfrentas qualquer tempestade sem recuar. Possuis uma força interior imensa, disciplina férrea e uma lealdade inquebrável para com a tua família ou causas essenciais.',
+                profile: { EXT: -3, CRT: -4, DRV: 5, EMP: -3 }
             },
             {
-                text: "Tomo decisões difíceis com firmeza e determinação, focado no impacto de longo prazo.",
-                trait: "L"
+                id: 'messi',
+                name: 'Lionel Messi',
+                title: 'O Genial & Discreto',
+                category: 'Desporto',
+                categoryIcon: '⚽',
+                icon: '🪄',
+                quote: '"Deixo que os meus atos e o meu talento falem por mim."',
+                tags: ['Talentoso', 'Reservado', 'Calmo', 'Genial'],
+                description: 'Tranquilo, humilde e extraordinariamente eficaz. Preferes agir em vez de falar. A tua intuição e talento natural permitem-te resolver momentos difíceis com uma simplicidade desconcertante.',
+                profile: { EXT: -4, CRT: 4, DRV: 2, EMP: 1 }
+            },
+            {
+                id: 'lara',
+                name: 'Lara Croft',
+                title: 'A Aventureira & Perspicaz',
+                category: 'Jogo',
+                categoryIcon: '🎮',
+                icon: '🏹',
+                quote: '"A curiosidade e a coragem abrem portas que outros temem."',
+                tags: ['Aventureira', 'Perspicaz', 'Independente', 'Curiosa'],
+                description: 'Amas explorar o desconhecido, aprender coisas novas e superar desafios físicos ou intelectuais. A tua autoconfiança e capacidade de improviso fazem-te destacar.',
+                profile: { EXT: 1, CRT: 3, DRV: 4, EMP: -1 }
             }
         ];
 
-        // Perfis e Arquétipos de Personalidade Detalhados
-        const archetypes = {
-            A: {
-                title: "O Analista Estratégico",
-                tagline: "Rigoroso, Lógico e Meticuloso",
-                icon: "fa-brain",
-                description: "És impulsionado pela curiosidade intelectual e pelo desejo de compreender como os sistemas funcionam. Destacas-te pela capacidade de desconstruir problemas complexos, identificar padrões ocultos e tomar decisões fundamentadas em factos.",
-                strengths: [
-                    "Pensamento crítico e análise profunda",
-                    "Resolução lógica de problemas complexos",
-                    "Excelente organização e atenção aos detalhes",
-                    "Objetividade sob pressão"
-                ],
-                improvements: [
-                    "Podes hesitar por excesso de análise (paralisia por análise)",
-                    "Dificuldade ocasional em lidar com a imprevisibilidade emocional alheia",
-                    "Tendência a ser excessivamente autocrítico"
-                ],
-                communication: "Direto, fundamentado e focado na clareza. Preferes dados concretos em vez de palpites ou conversas informais.",
-                environment: "Ambientes estruturados, calmos e focados na eficiência, onde o mérito intelectual e a precisão sejam valorizados."
+        const QUESTIONS = [
+            {
+                id: 1,
+                category: 'Hábitos & Estilo de Vida',
+                text: 'Como é o teu sábado à noite ideal?',
+                options: [
+                    { text: 'Em casa tranquilo, a ver um bom filme ou a jogar algo sossegado.', profile: { EXT: -2, CRT: 1, DRV: -1, EMP: 1 } },
+                    { text: 'Num jantar ou saída com um grande grupo de amigos a conviver.', profile: { EXT: 3, CRT: 0, DRV: 1, EMP: 2 } },
+                    { text: 'A trabalhar num projeto pessoal ou a aprender uma nova competência.', profile: { EXT: -1, CRT: 2, DRV: 3, EMP: -2 } },
+                    { text: 'A praticar desporto ou numa atividade cheia de adrenalina ao ar livre.', profile: { EXT: 2, CRT: -1, DRV: 3, EMP: 0 } }
+                ]
             },
-            C: {
-                title: "O Empreendedor Criativo",
-                tagline: "Inovador, Intuitivo e Adaptável",
-                icon: "fa-wand-magic-sparkles",
-                description: "Vês o mundo através do prisma de possibilidades infinitas. A tua mente está constantemente a ligar conceitos aparentemente distantes para criar soluções inovadoras. Adoras dinamismo e detestas a rotina monótona.",
-                strengths: [
-                    "Grande capacidade de inovação e imaginação",
-                    "Excelente flexibilidade e adaptabilidade",
-                    "Entusiasmo contagiante por novas ideias",
-                    "Habilidade para resolver desafios de forma não convencional"
-                ],
-                improvements: [
-                    "Tendência a perder o interesse após a fase inicial de ideação",
-                    "Alguma dificuldade em manter rotinas rígidas",
-                    "Risco de dispersar o foco em múltiplos projetos simultâneos"
-                ],
-                communication: "Expressivo, inspirador e concetual. Gostas de discutir ideias abstratas e visões de futuro.",
-                environment: "Locais dinâmicos, informais e flexíveis, que incentivem a experimentação e a liberdade criativa sem microgestão."
+            {
+                id: 2,
+                category: 'Filmes & Séries',
+                text: 'Que género de filme te prende do início ao fim?',
+                options: [
+                    { text: 'Ficção Científica e Fantasia com mundos e futuros inovadores.', profile: { EXT: 0, CRT: 4, DRV: 1, EMP: -1 } },
+                    { text: 'Ação pura, suspense e aventuras de ritmo acelerado.', profile: { EXT: 1, CRT: -1, DRV: 3, EMP: -1 } },
+                    { text: 'Dramas profundos, biografias ou histórias baseadas em factos reais.', profile: { EXT: -1, CRT: 1, DRV: 1, EMP: 4 } },
+                    { text: 'Comédias divertidas para descontrair e dar boas gargalhadas.', profile: { EXT: 2, CRT: 1, DRV: -2, EMP: 2 } }
+                ]
             },
-            E: {
-                title: "O Protetor Empático",
-                tagline: "Atencioso, Colaborativo e Intuitivo",
-                icon: "fa-heart font-semibold",
-                description: "O teu superpoder é a inteligência emocional. Possuis uma capacidade profunda de compreender e ligar-te aos outros, atuando frequentemente como o elo de união e coesão em qualquer grupo ou comunidade.",
-                strengths: [
-                    "Elevada empatia e escuta ativa",
-                    "Facilidade na mediação de conflitos e construção de pontes",
-                    "Lealdade e dedicação ao bem-estar coletivo",
-                    "Forte sensibilidade interpessoal"
-                ],
-                improvements: [
-                    "Tendência a colocar as necessidades dos outros acima das suas",
-                    "Dificuldade em dizer 'não' ou estabelecer limites firmes",
-                    "Sensibilidade elevada a críticas interpessoais"
-                ],
-                communication: "Acolhedor, atencioso e harmonioso. Priorizas o impacto emocional das palavras e o respeito mútuo.",
-                environment: "Ambientes colaborativos, calorosos e humanos, onde a cooperação e o impacto positivo na vida das pessoas sejam o foco."
+            {
+                id: 3,
+                category: 'O que te Irrita (Pet Peeve)',
+                text: 'Qual destas coisas mais te tira do sério no dia a dia?',
+                options: [
+                    { text: 'Pessoas sem compromisso, preguiçosas ou desorganizadas.', profile: { EXT: 0, CRT: -2, DRV: 4, EMP: -3 } },
+                    { text: 'Falta de empatia, grosseria e falta de respeito pelos outros.', profile: { EXT: -1, CRT: 0, DRV: -1, EMP: 5 } },
+                    { text: 'Ambientes com barulho excessivo, confusão e drama inútil.', profile: { EXT: -3, CRT: 1, DRV: 0, EMP: 0 } },
+                    { text: 'Rotina monótona e regras sem sentido prático.', profile: { EXT: 2, CRT: 3, DRV: 1, EMP: -1 } }
+                ]
             },
-            L: {
-                title: "O Líder Visionário",
-                tagline: "Determinado, Convicto e Orientado a Resultados",
-                icon: "fa-crown",
-                description: "Possuis uma visão clara de onde queres chegar e a determinação necessária para transformar essa visão em realidade. És movido por desafios, tens facilidade em motivar equipas e assumir a responsabilidade pelas grandes decisões.",
-                strengths: [
-                    "Visão estratégica e orientação a objetivos",
-                    "Confiança para liderar e tomar decisões sob incerteza",
-                    "Capacidade de inspirar e mobilizar pessoas",
-                    "Foco incansável no progresso e na eficiência"
-                ],
-                improvements: [
-                    "Impaciência perante processos lentos ou burocráticos",
-                    "Risco de parecer intransigente ao defender a sua visão",
-                    "Necessidade de praticar a delegação total sem centralizar"
-                ],
-                communication: "Assertivo, persuasivo e orientado à ação. Vais direto ao ponto e gostas de focar nos resultados finais.",
-                environment: "Locais desafiantes, de alto rendimento e competitivos, onde tenhas autonomia para liderar e implementar mudanças."
+            {
+                id: 4,
+                category: 'Reação ao Inesperado',
+                text: 'Como reages quando os teus planos mudam à última da hora?',
+                options: [
+                    { text: 'Adapto-me rapidamente e improviso uma solução criativa.', profile: { EXT: 1, CRT: 4, DRV: 1, EMP: 1 } },
+                    { text: 'Fico ligeiramente chateado(a), mas analiso a melhor alternativa prática.', profile: { EXT: -1, CRT: -2, DRV: 2, EMP: -2 } },
+                    { text: 'Aproveito o imprevisto como oportunidade para relaxar.', profile: { EXT: -2, CRT: 1, DRV: -3, EMP: 2 } },
+                    { text: 'Assumo o controlo da situação para redefinir o plano imediatamente.', profile: { EXT: 3, CRT: 0, DRV: 4, EMP: -1 } }
+                ]
+            },
+            {
+                id: 5,
+                category: 'Hobbies & Tempos Livres',
+                text: 'O que mais gostas de fazer nos teus tempos livres para recarregar energias?',
+                options: [
+                    { text: 'Praticar exercício, treinar ou jogar desporto competitivo.', profile: { EXT: 2, CRT: -2, DRV: 4, EMP: -1 } },
+                    { text: 'Ler, escrever, desenhar ou criar algo completamente do zero.', profile: { EXT: -3, CRT: 5, DRV: 1, EMP: 2 } },
+                    { text: 'Explorar videojogos imersivos com boas histórias.', profile: { EXT: -2, CRT: 3, DRV: 0, EMP: 0 } },
+                    { text: 'Estar em convívio com família ou amigos num café/restaurante.', profile: { EXT: 4, CRT: 0, DRV: -1, EMP: 4 } }
+                ]
+            },
+            {
+                id: 6,
+                category: 'Tomada de Decisões',
+                text: 'Quando tens de tomar uma decisão importante na vida, o que pesa mais?',
+                options: [
+                    { text: 'A lógica fria, factos e análise de prós e contras.', profile: { EXT: -1, CRT: -3, DRV: 2, EMP: -4 } },
+                    { text: 'A minha intuição visceral e a paixão pelo que sinto correto.', profile: { EXT: 1, CRT: 4, DRV: 3, EMP: 2 } },
+                    { text: 'O impacto que a decisão terá nas pessoas ao meu redor.', profile: { EXT: 0, CRT: 1, DRV: -1, EMP: 5 } },
+                    { text: 'O objetivo final e os resultados práticos que vou obter.', profile: { EXT: 2, CRT: -1, DRV: 4, EMP: -2 } }
+                ]
+            },
+            {
+                id: 7,
+                category: 'Relações Interpessoais',
+                text: 'Num grupo de trabalho ou amigos, costumas ser aquele(a) que...',
+                options: [
+                    { text: 'Toma a liderança e define a direção das tarefas.', profile: { EXT: 4, CRT: 0, DRV: 4, EMP: -1 } },
+                    { text: 'Traz as ideias fora da caixa e soluções inovadoras.', profile: { EXT: 1, CRT: 5, DRV: 1, EMP: 1 } },
+                    { text: 'Garante o bom ambiente e cuida do bem-estar do grupo.', profile: { EXT: 2, CRT: 1, DRV: -1, EMP: 5 } },
+                    { text: 'Executa o trabalho com máxima precisão e sem alarde.', profile: { EXT: -3, CRT: -2, DRV: 3, EMP: -1 } }
+                ]
+            },
+            {
+                id: 8,
+                category: 'Gostos & Gastronomia',
+                text: 'Qual é o teu estilo preferido para refeições e comida?',
+                options: [
+                    { text: 'Refeições práticas, funcionais e focadas numa alimentação saudável/fitness.', profile: { EXT: -1, CRT: -2, DRV: 4, EMP: -2 } },
+                    { text: 'Experimentar novos restaurantes exóticos e pratos com sabores diferentes.', profile: { EXT: 2, CRT: 4, DRV: 1, EMP: 1 } },
+                    { text: 'Comida caseira tradicional em jantares calmos em família.', profile: { EXT: -2, CRT: -1, DRV: -1, EMP: 4 } },
+                    { text: 'Aperitivos, petiscos e churrascos animados em grande companhia.', profile: { EXT: 4, CRT: 0, DRV: 0, EMP: 2 } }
+                ]
+            },
+            {
+                id: 9,
+                category: 'Ambiente de Trabalho / Estudo',
+                text: 'Em que tipo de ambiente te sentes mais produtivo(a)?',
+                options: [
+                    { text: 'Um espaço silencioso, altamente organizado e sem distrações.', profile: { EXT: -4, CRT: -2, DRV: 3, EMP: -2 } },
+                    { text: 'Um ambiente dinâmico, criativo e com autonomia total.', profile: { EXT: 0, CRT: 5, DRV: 2, EMP: 1 } },
+                    { text: 'Um local competitivo com metas claras e recompensas elevadas.', profile: { EXT: 3, CRT: -1, DRV: 5, EMP: -3 } },
+                    { text: 'Um ambiente colaborativo, acolhedor e com bom espírito de equipa.', profile: { EXT: 3, CRT: 1, DRV: 0, EMP: 4 } }
+                ]
+            },
+            {
+                id: 10,
+                category: 'Superação de Desafios',
+                text: 'O que te faz continuar quando enfrentas um obstáculo muito difícil?',
+                options: [
+                    { text: 'O orgulho pessoal de provar que sou capaz de vencer.', profile: { EXT: 1, CRT: -1, DRV: 5, EMP: -2 } },
+                    { text: 'O desejo de proteger e apoiar quem confia em mim.', profile: { EXT: -1, CRT: 1, DRV: 3, EMP: 5 } },
+                    { text: 'A curiosidade de encontrar uma solução inteligente para o enigma.', profile: { EXT: -2, CRT: 4, DRV: 2, EMP: -1 } },
+                    { text: 'A busca pela perfeição e mestria naquilo que faço.', profile: { EXT: 0, CRT: 0, DRV: 4, EMP: 0 } }
+                ]
+            },
+            {
+                id: 11,
+                category: 'Viagens & Férias',
+                text: 'Qual seria o teu destino de férias de sonho?',
+                options: [
+                    { text: 'Uma expedição cheia de aventuras, ruínas e exploração na natureza.', profile: { EXT: 1, CRT: 3, DRV: 3, EMP: -1 } },
+                    { text: 'Um resort de luxo num local calmo para descansar a 100%.', profile: { EXT: -2, CRT: -1, DRV: -3, EMP: 2 } },
+                    { text: 'Uma metrópole vibrante cheia de cultura, eventos e vida noturna.', profile: { EXT: 4, CRT: 2, DRV: 1, EMP: 1 } },
+                    { text: 'Um retiro espiritual isolado nas montanhas para reflexão.', profile: { EXT: -4, CRT: 2, DRV: -1, EMP: 3 } }
+                ]
+            },
+            {
+                id: 12,
+                category: 'Gostos Musicais',
+                text: 'Que género musical melhor acompanha o teu ritmo de vida?',
+                options: [
+                    { text: 'Música épica, bandas sonoras motivacionais ou Rock enérgico.', profile: { EXT: 1, CRT: 2, DRV: 4, EMP: -1 } },
+                    { text: 'Pop, Hip-Hop ou Hits contagiantes que dão vontade de dançar.', profile: { EXT: 4, CRT: 2, DRV: 1, EMP: 2 } },
+                    { text: 'Indie, Jazz, Instrumental ou sons relaxantes para focar.', profile: { EXT: -3, CRT: 4, DRV: -1, EMP: 3 } },
+                    { text: 'Música eletrónica ou batidas com ritmo marcante e focado.', profile: { EXT: 1, CRT: 1, DRV: 3, EMP: -3 } }
+                ]
+            },
+            {
+                id: 13,
+                category: 'Atitude perante Críticas',
+                text: 'Como lidas com críticas ao teu trabalho ou atitude?',
+                options: [
+                    { text: 'Uso a crítica como combustível para treinar/trabalhar mais e calar os céticos.', profile: { EXT: 2, CRT: -1, DRV: 5, EMP: -2 } },
+                    { text: 'Filtro racionalmente o que faz sentido e ignoro o resto.', profile: { EXT: -2, CRT: 1, DRV: 2, EMP: -3 } },
+                    { text: 'Levos as coisas a peito e tento refletir emocionalmente sobre o assunto.', profile: { EXT: -1, CRT: 1, DRV: -1, EMP: 4 } },
+                    { text: 'Debato abertamente para defender o meu ponto de vista.', profile: { EXT: 3, CRT: 3, DRV: 2, EMP: -1 } }
+                ]
+            },
+            {
+                id: 14,
+                category: 'Redes Sociais & Comunicação',
+                text: 'Como te comportas nas redes sociais e mensagens?',
+                options: [
+                    { text: 'Muito ativo(a), partilho fotos, momentos e ideias com frequência.', profile: { EXT: 5, CRT: 2, DRV: 1, EMP: 2 } },
+                    { text: 'Apenas observo o conteúdo e falo no privado com amigos chegados.', profile: { EXT: -4, CRT: 0, DRV: 0, EMP: 1 } },
+                    { text: 'Utilizo maioritariamente para fins profissionais ou notícias.', profile: { EXT: -1, CRT: -2, DRV: 3, EMP: -3 } },
+                    { text: 'Publico projetos criativos, arte, memes ou pensamentos originais.', profile: { EXT: 1, CRT: 5, DRV: 0, EMP: 1 } }
+                ]
+            },
+            {
+                id: 15,
+                category: 'Estilo de Organização',
+                text: 'Como geres as tuas tarefas e rotinas do dia?',
+                options: [
+                    { text: 'Sigo uma agenda rigorosa com horários e listas detalhadas.', profile: { EXT: -1, CRT: -3, DRV: 4, EMP: -2 } },
+                    { text: 'Tenho metas na cabeça, mas gosto de ter flexibilidade total.', profile: { EXT: 1, CRT: 3, DRV: 0, EMP: 1 } },
+                    { text: 'Funciono melhor sob pressão no último minuto.', profile: { EXT: 2, CRT: 3, DRV: -2, EMP: -1 } },
+                    { text: 'Priorizo o meu bem-estar e o ritmo natural do corpo/mente.', profile: { EXT: -2, CRT: 1, DRV: -3, EMP: 4 } }
+                ]
+            },
+            {
+                id: 16,
+                category: 'Super-Poder Desejado',
+                text: 'Se pudesses escolher um talento ou poder lendário, qual seria?',
+                options: [
+                    { text: 'Força e determinação física/mental invencíveis.', profile: { EXT: 1, CRT: -2, DRV: 5, EMP: -2 } },
+                    { text: 'A capacidade de criar qualquer coisa através da imaginação.', profile: { EXT: 0, CRT: 5, DRV: 1, EMP: 2 } },
+                    { text: 'Telepatia para entender e curar os sentimentos de todos.', profile: { EXT: -1, CRT: 2, DRV: -1, EMP: 5 } },
+                    { text: 'Inteligência suprema para prever e dominar o futuro.', profile: { EXT: 0, CRT: 4, DRV: 4, EMP: -4 } }
+                ]
+            },
+            {
+                id: 17,
+                category: 'Filosofia de Vida',
+                text: 'Qual destas frases descreve melhor a tua mentalidade?',
+                options: [
+                    { text: '"O trabalho duro vence o talento quando o talento não trabalha."', profile: { EXT: 2, CRT: -2, DRV: 5, EMP: -2 } },
+                    { text: '"Seja a mudança generosa que queres ver no mundo."', profile: { EXT: -2, CRT: 1, DRV: 0, EMP: 5 } },
+                    { text: '"A melhor forma de prever o futuro é criá-lo."', profile: { EXT: 1, CRT: 5, DRV: 4, EMP: -2 } },
+                    { text: '"Vive o presente com calma e lealdade a quem amas."', profile: { EXT: -3, CRT: -1, DRV: -2, EMP: 4 } }
+                ]
+            },
+            {
+                id: 18,
+                category: 'Legado Pessoal',
+                text: 'Como gostarias que as pessoas se lembrassem de ti?',
+                options: [
+                    { text: 'Como alguém lendário que atingiu o topo do seu campo.', profile: { EXT: 3, CRT: -1, DRV: 5, EMP: -2 } },
+                    { text: 'Como uma pessoa genuína, bondosa e que ajudou os outros.', profile: { EXT: -1, CRT: 1, DRV: -1, EMP: 5 } },
+                    { text: 'Como uma mente genial que inovou e inspirou novas ideias.', profile: { EXT: 1, CRT: 5, DRV: 3, EMP: -1 } },
+                    { text: 'Como alguém corajoso que viveu sem medos e foi fiel a si mesmo.', profile: { EXT: 0, CRT: 2, DRV: 3, EMP: 1 } }
+                ]
             }
+        ];
+
+        // ==========================================
+        // STATE MANAGEMENT
+        // ==========================================
+        let currentUser = null; // { username: string, result: obj|null }
+        let currentQuestionIndex = 0;
+        let selectedAnswers = new Array(QUESTIONS.length).fill(null);
+
+        // ==========================================
+        // APP INITIALIZATION
+        // ==========================================
+        window.onload = function() {
+            checkStoredSession();
+            updateHeaderUI();
         };
 
-        // Estado da aplicação
-        let currentQuestion = 0;
-        let answers = Array(questions.length).fill(null);
-        let traitsChartInstance = null;
-
-        // Elementos DOM
-        const startScreen = document.getElementById('startScreen');
-        const quizScreen = document.getElementById('quizScreen');
-        const resultsScreen = document.getElementById('resultsScreen');
-        const questionCard = document.getElementById('questionCard');
-        const questionText = document.getElementById('questionText');
-        const questionProgressText = document.getElementById('questionProgressText');
-        const percentageText = document.getElementById('percentageText');
-        const progressBar = document.getElementById('progressBar');
-        const prevBtn = document.getElementById('prevBtn');
-
-        // Alternar Tema (Escuro / Claro)
-        function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-        }
-
-        // Iniciar Quiz
-        function startQuiz() {
-            startScreen.classList.add('hidden');
-            quizScreen.classList.remove('hidden');
-            currentQuestion = 0;
-            answers = Array(questions.length).fill(null);
-            loadQuestion();
-        }
-
-        // Carregar Pergunta Atual
-        function loadQuestion() {
-            const q = questions[currentQuestion];
-            
-            // Animação de entrada
-            questionCard.classList.remove('slide-enter-active');
-            void questionCard.offsetWidth; // trigger reflow
-            questionCard.classList.add('slide-enter-active');
-
-            questionText.textContent = `${currentQuestion + 1}. ${q.text}`;
-            questionProgressText.textContent = `Pergunta ${currentQuestion + 1} de ${questions.length}`;
-            
-            const progressPercent = Math.round(((currentQuestion + 1) / questions.length) * 100);
-            percentageText.textContent = `${progressPercent}%`;
-            progressBar.style.width = `${progressPercent}%`;
-
-            // Ativar / Desativar botão Anterior
-            prevBtn.disabled = currentQuestion === 0;
-        }
-
-        // Selecionar Opção (Valor 1 a 5)
-        function selectOption(score) {
-            answers[currentQuestion] = score;
-
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                loadQuestion();
-            } else {
-                calculateResults();
-            }
-        }
-
-        // Voltar à Pergunta Anterior
-        function prevQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                loadQuestion();
-            }
-        }
-
-        // Resetar Quiz
-        function resetQuiz() {
-            resultsScreen.classList.add('hidden');
-            quizScreen.classList.add('hidden');
-            startScreen.classList.remove('hidden');
-            currentQuestion = 0;
-            answers = Array(questions.length).fill(null);
-            if (traitsChartInstance) {
-                traitsChartInstance.destroy();
-            }
-        }
-
-        // Calcular Resultados e Apresentar Perfil
-        function calculateResults() {
-            const scores = { A: 0, C: 0, E: 0, L: 0 };
-
-            // Somar pontuações correspondentes
-            answers.forEach((score, index) => {
-                const trait = questions[index].trait;
-                scores[trait] += score;
-            });
-
-            // Determinar o traço dominante
-            let maxTrait = 'A';
-            let maxScore = -1;
-            for (const [trait, score] of Object.entries(scores)) {
-                if (score > maxScore) {
-                    maxScore = score;
-                    maxTrait = trait;
+        function checkStoredSession() {
+            const savedSession = localStorage.getItem('personamatch_session');
+            if (savedSession) {
+                try {
+                    currentUser = JSON.parse(savedSession);
+                } catch(e) {
+                    currentUser = null;
                 }
             }
-
-            const archetype = archetypes[maxTrait];
-
-            // Preencher dados na Interface
-            document.getElementById('archetitle').textContent = archetype.title;
-            document.getElementById('archetagline').textContent = archetype.tagline;
-            document.getElementById('archeDescription').textContent = archetype.description;
-            document.getElementById('archetypeIcon').className = `fa-solid ${archetype.icon}`;
-
-            // Pontos Fortes
-            const strengthsList = document.getElementById('strengthsList');
-            strengthsList.innerHTML = archetype.strengths.map(s => `<li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> <span>${s}</span></li>`).join('');
-
-            // Áreas de Melhoria
-            const improvementsList = document.getElementById('improvementsList');
-            improvementsList.innerHTML = archetype.improvements.map(i => `<li class="flex items-start gap-2"><i class="fa-solid fa-arrow-up-right-dots text-amber-500 mt-1"></i> <span>${i}</span></li>`).join('');
-
-            // Estilo e Ambiente
-            document.getElementById('communicationStyle').textContent = archetype.communication;
-            document.getElementById('idealEnvironment').textContent = archetype.idealEnvironment;
-
-            // Transição para tela de resultados
-            quizScreen.classList.add('hidden');
-            resultsScreen.classList.remove('hidden');
-
-            // Renderizar Gráfico
-            renderChart(scores);
         }
 
-        // Renderizar Gráfico com Chart.js
-        function renderChart(scores) {
-            const ctx = document.getElementById('traitsChart').getContext('2d');
+        function updateHeaderUI() {
+            const container = document.getElementById('auth-header-section');
+            const homeHistoryBtn = document.getElementById('home-history-btn');
+
+            if (currentUser) {
+                container.innerHTML = `
+                    <div class="flex items-center gap-2 bg-slate-900/90 border border-slate-700 px-3 py-1.5 rounded-xl">
+                        <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
+                            ${currentUser.username.substring(0, 2).toUpperCase()}
+                        </div>
+                        <span class="text-sm font-medium text-slate-200">${currentUser.username}</span>
+                    </div>
+                    <button onclick="logout()" class="p-2 text-slate-400 hover:text-rose-400 transition-all text-sm" title="Sair">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                `;
+
+                if (currentUser.result) {
+                    homeHistoryBtn.classList.remove('hidden');
+                } else {
+                    homeHistoryBtn.classList.add('hidden');
+                }
+            } else {
+                container.innerHTML = `
+                    <button onclick="openAuthModal('login')" class="text-sm font-semibold text-slate-300 hover:text-white px-3 py-2 transition-all">
+                        Entrar
+                    </button>
+                    <button onclick="openAuthModal('register')" class="text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl transition-all btn-glow">
+                        Criar Conta
+                    </button>
+                `;
+                homeHistoryBtn.classList.add('hidden');
+            }
+        }
+
+        // Navigation helpers
+        function showView(viewId) {
+            ['view-home', 'view-quiz', 'view-result'].forEach(id => {
+                const el = document.getElementById(id);
+                if (id === viewId) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showHome() {
+            showView('view-home');
+        }
+
+        // ==========================================
+        // QUIZ ENGINE
+        // ==========================================
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            selectedAnswers = new Array(QUESTIONS.length).fill(null);
+            showView('view-quiz');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = QUESTIONS[currentQuestionIndex];
             
-            if (traitsChartInstance) {
-                traitsChartInstance.destroy();
+            // Update Progress
+            const total = QUESTIONS.length;
+            const progress = Math.round(((currentQuestionIndex) / total) * 100);
+            document.getElementById('quiz-progress-text').innerText = `Pergunta ${currentQuestionIndex + 1} de ${total}`;
+            document.getElementById('quiz-progress-percent').innerText = `${progress}%`;
+            document.getElementById('quiz-progress-bar').style.width = `${progress}%`;
+
+            // Question Details
+            document.getElementById('question-category').innerText = q.category;
+            document.getElementById('question-text').innerText = q.text;
+
+            // Render Options
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const isSelected = selectedAnswers[currentQuestionIndex] === idx;
+                const card = document.createElement('div');
+                card.className = `glass-card p-4 md:p-5 rounded-2xl cursor-pointer flex items-center gap-4 text-slate-200 transition-all ${isSelected ? 'selected' : ''}`;
+                card.onclick = () => selectOption(idx);
+
+                card.innerHTML = `
+                    <div class="w-7 h-7 rounded-full border-2 border-slate-600 flex items-center justify-center shrink-0 transition-all ${isSelected ? 'border-indigo-500 bg-indigo-600 text-white' : ''}">
+                        ${isSelected ? '<i class="fa-solid fa-check text-xs"></i>' : `<span class="text-xs text-slate-400 font-semibold">${String.fromCharCode(65 + idx)}</span>`}
+                    </div>
+                    <span class="text-base font-medium leading-snug">${opt.text}</span>
+                `;
+                container.appendChild(card);
+            });
+
+            // Navigation Buttons State
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            const nextBtn = document.getElementById('next-btn');
+            
+            if (selectedAnswers[currentQuestionIndex] !== null) {
+                nextBtn.disabled = false;
+            } else {
+                nextBtn.disabled = true;
             }
 
-            const isDark = document.documentElement.classList.contains('dark');
-            const textColor = isDark ? '#f1f5f9' : '#334155';
-            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+            if (currentQuestionIndex === total - 1) {
+                nextBtn.innerHTML = '<span>Ver Resultado</span> <i class="fa-solid fa-sparkles"></i>';
+            } else {
+                nextBtn.innerHTML = '<span>Próxima</span> <i class="fa-solid fa-arrow-right"></i>';
+            }
+        }
 
-            // Normalizar valores para percentagem (máximo por traço é 10)
-            const dataValues = [
-                Math.round((scores.A / 10) * 100),
-                Math.round((scores.C / 10) * 100),
-                Math.round((scores.E / 10) * 100),
-                Math.round((scores.L / 10) * 100)
+        function selectOption(optionIndex) {
+            selectedAnswers[currentQuestionIndex] = optionIndex;
+            renderQuestion();
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (selectedAnswers[currentQuestionIndex] === null) return;
+
+            if (currentQuestionIndex < QUESTIONS.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                calculateAndShowResult();
+            }
+        }
+
+        // ==========================================
+        // MATCHING ALGORITHM & RESULTS
+        // ==========================================
+        function calculateAndShowResult() {
+            // Calculate User Vector
+            let userProfile = { EXT: 0, CRT: 0, DRV: 0, EMP: 0 };
+
+            selectedAnswers.forEach((ansIdx, qIdx) => {
+                if (ansIdx !== null) {
+                    const optProfile = QUESTIONS[qIdx].options[ansIdx].profile;
+                    userProfile.EXT += optProfile.EXT;
+                    userProfile.CRT += optProfile.CRT;
+                    userProfile.DRV += optProfile.DRV;
+                    userProfile.EMP += optProfile.EMP;
+                }
+            });
+
+            // Find closest character using Euclidean distance in trait space
+            let bestMatch = null;
+            let minDistance = Infinity;
+
+            CHARACTERS.forEach(char => {
+                const dist = Math.sqrt(
+                    Math.pow(userProfile.EXT - char.profile.EXT, 2) +
+                    Math.pow(userProfile.CRT - char.profile.CRT, 2) +
+                    Math.pow(userProfile.DRV - char.profile.DRV, 2) +
+                    Math.pow(userProfile.EMP - char.profile.EMP, 2)
+                );
+
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    bestMatch = char;
+                }
+            });
+
+            // Render Result Page
+            renderResultPage(bestMatch, userProfile);
+            showView('view-result');
+
+            // Auto-save if logged in
+            if (currentUser) {
+                currentUser.result = {
+                    charId: bestMatch.id,
+                    date: new Date().toLocaleDateString('pt-PT')
+                };
+                saveUserData(currentUser);
+                updateHeaderUI();
+            }
+        }
+
+        function renderResultPage(char, userProfile) {
+            document.getElementById('res-char-icon').innerText = char.icon;
+            document.getElementById('res-char-name').innerText = char.name;
+            document.getElementById('res-char-title').innerText = char.title;
+            document.getElementById('res-category-badge').innerText = `${char.categoryIcon} ${char.category}`;
+            document.getElementById('res-char-quote').innerText = char.quote;
+            document.getElementById('res-char-description').innerText = char.description;
+
+            // Tags
+            const tagsContainer = document.getElementById('res-char-tags');
+            tagsContainer.innerHTML = '';
+            char.tags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = 'bg-indigo-950/80 border border-indigo-800/60 text-indigo-300 text-xs px-3 py-1 rounded-full font-medium';
+                span.innerText = `#${tag}`;
+                tagsContainer.appendChild(span);
+            });
+
+            // Trait Bars Breakdown
+            const traitsContainer = document.getElementById('res-traits-bars');
+            traitsContainer.innerHTML = '';
+
+            const traitDefinitions = [
+                { key: 'EXT', label: 'Energia Social', leftLabel: 'Reservado', rightLabel: 'Extrovertido' },
+                { key: 'CRT', label: 'Estilo Mental', leftLabel: 'Prático', rightLabel: 'Criativo' },
+                { key: 'DRV', label: 'Ambição', leftLabel: 'Tranquilo', rightLabel: 'Determinado' },
+                { key: 'EMP', label: 'Foco Emocional', leftLabel: 'Lógico', rightLabel: 'Empático' }
             ];
 
-            traitsChartInstance = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['Analítico', 'Criativo', 'Empático', 'Líder'],
-                    datasets: [{
-                        label: 'Intensidade do Traço (%)',
-                        data: dataValues,
-                        backgroundColor: 'rgba(99, 102, 241, 0.25)',
-                        borderColor: '#6366f1',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#818cf8',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: '#6366f1'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: { color: gridColor },
-                            grid: { color: gridColor },
-                            pointLabels: {
-                                color: textColor,
-                                font: { family: 'Inter', size: 12, weight: '600' }
-                            },
-                            ticks: {
-                                display: false,
-                                beginAtZero: true,
-                                max: 100
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
+            traitDefinitions.forEach(t => {
+                const score = userProfile[t.key];
+                // Map score (-20 to +20) to percentage (0% to 100%)
+                const percentage = Math.min(Math.max(Math.round(((score + 20) / 40) * 100), 10), 90);
+
+                const div = document.createElement('div');
+                div.className = 'bg-slate-900/60 p-4 rounded-xl border border-slate-800 space-y-2';
+                div.innerHTML = `
+                    <div class="flex justify-between items-center text-xs font-semibold text-slate-300">
+                        <span>${t.leftLabel}</span>
+                        <span class="text-indigo-400 uppercase tracking-wider text-[10px]">${t.label}</span>
+                        <span>${t.rightLabel}</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden relative">
+                        <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+                traitsContainer.appendChild(div);
             });
-        }
 
-        // Copiar Resultado para Área de Transferência
-        function copyResults() {
-            const title = document.getElementById('archetitle').textContent;
-            const tagline = document.getElementById('archetagline').textContent;
-            const textToCopy = `O meu Arquétipo de Personalidade no PersonaMatch é: "${title} - ${tagline}". Descobre o teu perfil também!`;
-
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    showToast("Resultado copiado para a área de transferência!");
-                });
+            // Update Save Button Text
+            const saveBtn = document.getElementById('save-to-profile-btn');
+            if (currentUser) {
+                saveBtn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Guardado no Perfil</span>';
+                saveBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
             } else {
-                // Fallback para ambientes restritos
-                const dummy = document.createElement("textarea");
-                document.body.appendChild(dummy);
-                dummy.value = textToCopy;
-                dummy.select();
-                document.execCommand("copy");
-                document.body.removeChild(dummy);
-                showToast("Resultado copiado para a área de transferência!");
+                saveBtn.innerHTML = '<i class="fa-solid fa-bookmark"></i> <span>Guardar no Perfil</span>';
+                saveBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
             }
         }
 
-        // Apresentar Toast Notification
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').textContent = message;
-            toast.classList.remove('translate-y-20', 'opacity-0');
+        function showHistory() {
+            if (currentUser && currentUser.result) {
+                const char = CHARACTERS.find(c => c.id === currentUser.result.charId);
+                if (char) {
+                    renderResultPage(char, char.profile);
+                    showView('view-result');
+                }
+            }
+        }
+
+        function saveResultToProfile() {
+            if (!currentUser) {
+                openAuthModal('register');
+                showToast('Cria uma conta ou entra para guardar o teu resultado!', 'info');
+            } else {
+                showToast('Resultado guardado com sucesso na tua conta!', 'success');
+            }
+        }
+
+        function shareResult() {
+            const charName = document.getElementById('res-char-name').innerText;
+            const text = `Fiz o teste PersonaMatch e a minha alma gémea é: ${charName}! Descobre o teu perfil em PersonaMatch.`;
             
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Link e resultado copiados para a área de transferência!', 'success');
+                }).catch(() => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showToast('Resultado copiado!', 'success');
+        }
+
+        // ==========================================
+        // AUTHENTICATION (LOCAL STORAGE SIMULATION)
+        // ==========================================
+        let authMode = 'login'; // 'login' or 'register'
+
+        function openAuthModal(mode = 'login') {
+            authMode = mode;
+            switchAuthTab(mode);
+            document.getElementById('auth-modal').classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+        }
+
+        function switchAuthTab(mode) {
+            authMode = mode;
+            const tabLogin = document.getElementById('tab-login');
+            const tabRegister = document.getElementById('tab-register');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const title = document.getElementById('auth-modal-title');
+
+            if (mode === 'login') {
+                tabLogin.className = 'flex-1 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition-all';
+                tabRegister.className = 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition-all';
+                submitBtn.innerText = 'Entrar';
+                title.innerText = 'Entrar na Conta';
+            } else {
+                tabRegister.className = 'flex-1 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition-all';
+                tabLogin.className = 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition-all';
+                submitBtn.innerText = 'Criar Conta';
+                title.innerText = 'Registar Nova Conta';
+            }
+        }
+
+        function handleAuthSubmit(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('auth-username').value.trim();
+            const passwordInput = document.getElementById('auth-password').value.trim();
+
+            if (!usernameInput || !passwordInput) {
+                showToast('Preenche todos os campos.', 'error');
+                return;
+            }
+
+            const usersKey = 'personamatch_users_db';
+            let usersDb = JSON.parse(localStorage.getItem(usersKey) || '{}');
+
+            if (authMode === 'register') {
+                if (usersDb[usernameInput.toLowerCase()]) {
+                    showToast('Este nome de utilizador já existe.', 'error');
+                    return;
+                }
+
+                const newUser = {
+                    username: usernameInput,
+                    password: passwordInput,
+                    result: currentUser ? currentUser.result : null
+                };
+
+                usersDb[usernameInput.toLowerCase()] = newUser;
+                localStorage.setItem(usersKey, JSON.stringify(usersDb));
+
+                currentUser = newUser;
+                saveUserData(currentUser);
+                updateHeaderUI();
+                closeAuthModal();
+                showToast(`Conta criada com sucesso! Bem-vindo(a), ${usernameInput}.`, 'success');
+            } else {
+                // Login
+                const existingUser = usersDb[usernameInput.toLowerCase()];
+                if (!existingUser || existingUser.password !== passwordInput) {
+                    showToast('Utilizador ou palavra-passe incorretos.', 'error');
+                    return;
+                }
+
+                currentUser = existingUser;
+                saveUserData(currentUser);
+                updateHeaderUI();
+                closeAuthModal();
+                showToast(`Sessão iniciada como ${currentUser.username}.`, 'success');
+
+                // If user has saved result, show button
+                if (currentUser.result) {
+                    document.getElementById('home-history-btn').classList.remove('hidden');
+                }
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('personamatch_session');
+            updateHeaderUI();
+            showToast('Sessão encerrada.', 'info');
+            showHome();
+        }
+
+        function saveUserData(user) {
+            localStorage.setItem('personamatch_session', JSON.stringify(user));
+            
+            // Sync DB
+            const usersKey = 'personamatch_users_db';
+            let usersDb = JSON.parse(localStorage.getItem(usersKey) || '{}');
+            usersDb[user.username.toLowerCase()] = user;
+            localStorage.setItem(usersKey, JSON.stringify(usersDb));
+        }
+
+        // ==========================================
+        // UI TOAST NOTIFICATIONS
+        // ==========================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgClass = 'bg-slate-800 border-slate-700 text-white';
+            let icon = '<i class="fa-solid fa-circle-info text-indigo-400"></i>';
+
+            if (type === 'success') {
+                bgClass = 'bg-emerald-950/90 border-emerald-700/80 text-emerald-200';
+                icon = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+            } else if (type === 'error') {
+                bgClass = 'bg-rose-950/90 border-rose-700/80 text-rose-200';
+                icon = '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>';
+            }
+
+            toast.className = `glass-panel ${bgClass} border px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-medium transition-all duration-300 transform translate-y-2 pointer-events-auto max-w-sm`;
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+
+            container.appendChild(toast);
+
             setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
         }
     </script>
 </body>
