@@ -248,34 +248,4 @@
     e.preventDefault();
     const counts = {};
     answers.forEach((ansIdx, qIdx) => {
-      const char = QUESTIONS[qIdx].options[ansIdx].char;
-      counts[char] = (counts[char] || 0) + 1;
-    });
-
-    let topChar = 'cronaldo';
-    let max = 0;
-    Object.keys(counts).forEach(c => {
-      if (counts[c] > max) { max = counts[c]; topChar = c; }
-    });
-
-    const result = CHARACTERS[topChar];
-    $('res-icon').textContent = result.icon;
-    $('res-name').textContent = result.name;
-    $('res-title').textContent = result.title;
-    $('res-desc').textContent = result.desc;
-
-    $('form-view').classList.add('hidden');$('result-view').classList.remove('hidden');
-  });
-
-  $('restart-btn').addEventListener('click', () => {
-    currentIndex = 0;
-    answers = Array(QUESTIONS.length).fill(null);
-    $('result-view').classList.add('hidden');$('quiz-view').classList.remove('hidden');
-    renderQuestion();
-  });
-
-  renderQuestion();
-})();
-</script>
-</body>
-</html>
+      const char = QUESTIONS[qIdx].
