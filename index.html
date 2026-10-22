@@ -164,6 +164,13 @@
         <div class="border-t border-slate-800 pt-5 flex flex-col sm:flex-row gap-3 justify-between">
           <button id="retry-btn" type="button" class="rounded-xl glass px-5 py-3 font-semibold hover:bg-slate-800"><i class="fa-solid fa-rotate-left mr-2" aria-hidden="true"></i>Repetir o teste</button>
           <div class="flex flex-col sm:flex-row gap-3">
+           <!-- Termos de Serviço transparentes e em conformidade -->
+<div class="pt-1 flex items-start gap-2">
+  <input id="terms-check" type="checkbox" required class="mt-0.5 h-4 w-4 rounded bg-slate-900 border-slate-700 accent-indigo-600 cursor-pointer">
+  <label for="terms-check" class="text-xs text-slate-400 select-none cursor-pointer leading-snug">
+    Li e aceito os <a href="#" class="text-indigo-400 underline hover:text-indigo-300">Termos de Serviço</a> e a <a href="#" class="text-indigo-400 underline hover:text-indigo-300">Política de Privacidade</a>.
+  </label>
+</div> 
             <button id="share-btn" type="button" class="rounded-xl bg-purple-600 hover:bg-purple-500 px-5 py-3 font-semibold"><i class="fa-solid fa-share-nodes mr-2" aria-hidden="true"></i>Partilhar</button>
             <button id="save-btn" type="button" class="primary-btn rounded-xl px-5 py-3 font-bold"><i class="fa-solid fa-bookmark mr-2" aria-hidden="true"></i>Guardar resultado</button>
           </div>
