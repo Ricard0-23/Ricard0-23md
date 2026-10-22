@@ -1,475 +1,281 @@
 <!DOCTYPE html>
-<html lang="pt-PT" class="dark">
+<html lang="pt-PT">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz de Personalidade</title>
-  
-  <!-- Tailwind CSS CDN -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d1c">
+  <title>Teste de Personalidade</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  
-  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              400: '#818cf8',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-              900: '#312e81',
-              950: '#1e1b4b',
-            }
-          }
-        }
-      }
-    }
-  </script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
     body {
-      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 50%, #020617 100%);
+      font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(ellipse at 15% 0%, #172554 0, #0b1020 38%, #050816 100%);
       color: #f8fafc;
       min-height: 100vh;
     }
-
-    .glass-card {
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .glass-card-interactive {
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .glass-card-interactive:hover {
-      border-color: rgba(129, 140, 248, 0.5);
-      transform: translateY(-2px);
-      background: rgba(30, 41, 59, 0.8);
-    }
-
-    .gradient-text {
-      background: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #3b82f6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .primary-btn {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.5);
-      transition: all 0.2s ease;
-    }
-
-    .primary-btn:hover:not(:disabled) {
-      filter: brightness(1.15);
-      box-shadow: 0 6px 24px -2px rgba(99, 102, 241, 0.75);
-      transform: translateY(-1px);
-    }
+    .glass { background: rgba(22, 31, 54, .76); border: 1px solid rgba(148,163,184,.16); backdrop-filter: blur(14px); }
+    .answer { background: rgba(8,15,32,.72); border: 1px solid rgba(148,163,184,.18); transition: border-color .2s, background .2s, transform .2s; }
+    .answer:hover { border-color: rgba(129,140,248,.75); transform: translateY(-1px); }
+    .answer[aria-pressed="true"] { background: rgba(79,70,229,.22); border-color: #818cf8; box-shadow: 0 0 0 1px rgba(129,140,248,.22); }
+    .gradient-text { background: linear-gradient(120deg,#c084fc,#818cf8,#60a5fa); color: transparent; background-clip: text; -webkit-background-clip: text; }
+    .primary-btn { background: linear-gradient(110deg,#4f46e5,#7c3aed); box-shadow: 0 8px 24px rgba(79,70,229,.2); }
+    .primary-btn:hover:not(:disabled) { filter: brightness(1.12); }
+    button:focus-visible, input:focus-visible { outline: 3px solid #a5b4fc; outline-offset: 2px; }
+    button:disabled { opacity: .4; cursor: not-allowed; }
+    .progress-fill { transition: width .25s ease; }
   </style>
 </head>
-<body class="font-sans antialiased flex flex-col min-h-screen selection:bg-brand-500 selection:text-white">
+<body class="antialiased">
 
-  <!-- HEADER -->
-  <header class="sticky top-0 z-30 glass-card border-x-0 border-t-0 shadow-lg">
+  <header class="sticky top-0 z-30 glass border-x-0 border-t-0">
     <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl primary-btn flex items-center justify-center text-lg text-white font-black">
-          <i class="fa-solid fa-masks-theater"></i>
-        </div>
+        <span class="w-10 h-10 rounded-xl primary-btn flex items-center justify-center text-lg"><i class="fa-solid fa-masks-theater"></i></span>
         <div>
-          <strong class="block text-xl font-black gradient-text tracking-tight">PersonaMatch</strong>
-          <span class="text-xs text-slate-400 font-medium">Descobre o teu perfil</span>
+          <strong class="block text-lg sm:text-xl gradient-text">Teste de Personalidade</strong>
+          <span class="text-xs text-slate-400">Descobre o teu perfil</span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="flex-grow max-w-2xl w-full mx-auto px-4 py-8 flex flex-col justify-center">
-
-    <!-- 1. QUIZ SECTION -->
-    <section id="quiz-section" class="space-y-6">
-      
-      <!-- Progress Bar -->
-      <div class="glass-card rounded-2xl p-4 space-y-2">
-        <div class="flex justify-between items-center text-xs font-bold text-slate-300">
-          <span id="progress-text" class="text-brand-400">Pergunta 1 de 4</span>
-          <span id="progress-percent" class="bg-brand-950 border border-brand-500/30 px-2.5 py-1 rounded-full text-brand-300">25%</span>
+  <main class="max-w-2xl mx-auto px-4 py-8">
+    <!-- Vista do Quiz -->
+    <section id="quiz-view" class="space-y-6">
+      <div class="glass rounded-2xl p-4 space-y-2">
+        <div class="flex justify-between text-xs text-slate-300 font-medium">
+          <span id="progress-label">Pergunta 1 de 4</span>
+          <span id="progress-percent">25%</span>
         </div>
-        <div class="h-2.5 rounded-full bg-slate-900 overflow-hidden p-0.5 border border-slate-800">
-          <div id="progress-fill" class="h-full rounded-full bg-gradient-to-r from-brand-500 to-purple-500 transition-all duration-300" style="width: 25%"></div>
+        <div class="h-2 rounded-full bg-slate-800 overflow-hidden">
+          <div id="progress-fill" class="progress-fill h-full w-1/4 bg-indigo-500"></div>
         </div>
       </div>
 
-      <!-- Question Card -->
-      <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
+      <div class="glass rounded-3xl p-6 sm:p-8 space-y-6">
         <div class="space-y-2">
-          <span id="question-category" class="inline-block px-3 py-1 rounded-full bg-purple-950/80 border border-purple-500/30 text-purple-300 text-xs font-extrabold uppercase tracking-wider">
-            Estilo de Vida
-          </span>
-          <h2 id="question-title" class="text-xl sm:text-2xl font-extrabold text-white leading-tight">
-            Como preferes passar um dia livre?
-          </h2>
+          <span id="question-category" class="inline-block rounded-full bg-indigo-950/80 border border-indigo-700/50 px-3 py-1 text-xs font-bold text-indigo-300 uppercase"></span>
+          <h2 id="question-text" class="text-xl sm:text-2xl font-bold leading-snug"></h2>
         </div>
-
-        <!-- Options list -->
         <div id="options-container" class="grid gap-3"></div>
       </div>
 
-      <!-- Quiz Navigation -->
-      <div class="flex justify-between items-center gap-4">
-        <button id="prev-btn" type="button" class="rounded-xl glass-card px-5 py-3 text-xs font-bold text-slate-300 hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none transition-all">
-          <i class="fa-solid fa-arrow-left mr-2"></i>Anterior
-        </button>
-        <button id="next-btn" type="button" disabled class="primary-btn rounded-xl px-6 py-3 text-xs font-bold text-white disabled:opacity-40 disabled:pointer-events-none flex items-center gap-2">
-          <span>Próxima</span>
-          <i class="fa-solid fa-arrow-right"></i>
-        </button>
+      <div class="flex justify-between items-center">
+        <button id="prev-btn" type="button" disabled class="rounded-xl glass px-5 py-3 text-sm font-semibold hover:bg-slate-800"><i class="fa-solid fa-arrow-left mr-2"></i>Anterior</button>
+        <button id="next-btn" type="button" disabled class="primary-btn rounded-xl px-6 py-3 text-sm font-bold">Próxima <i class="fa-solid fa-arrow-right ml-2"></i></button>
       </div>
-
     </section>
 
-    <!-- 2. CAPTURE FORM SECTION -->
-    <section id="form-section" class="hidden space-y-6">
-      <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-brand-500/30">
-        
+    <!-- Vista de Formulário e Resultado -->
+    <section id="form-view" class="hidden space-y-6">
+      <div class="glass rounded-3xl p-6 sm:p-8 space-y-6">
         <div class="text-center space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-950 border border-brand-500/30 text-brand-300 text-xs font-semibold">
-            <i class="fa-solid fa-check-circle"></i> Quiz Concluído!
-          </div>
-          <h2 class="text-2xl sm:text-3xl font-black text-white">Preenche os teus dados</h2>
-          <p class="text-xs text-slate-300">Introduz a informação abaixo para desbloquear o teu perfil calculado.</p>
+          <h2 class="text-2xl font-bold gradient-text">O teu perfil está pronto!</h2>
+          <p class="text-xs text-slate-400">Preenche os teus dados para gerar e guardar o resultado do teste.</p>
         </div>
 
         <form id="user-form" class="space-y-4">
-          
-          <!-- Nome -->
           <div class="space-y-1">
-            <label for="input-name" class="block text-xs font-semibold text-slate-200">
-              Nome Completo <span class="text-rose-400">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                <i class="fa-solid fa-user text-xs"></i>
-              </span>
-              <input id="input-name" type="text" required placeholder="Ex: Ana Silva" 
-                     class="w-full rounded-xl bg-slate-900/90 border border-slate-700 pl-9 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500">
-            </div>
+            <label for="input-name" class="text-xs font-semibold text-slate-300">Nome Completo</label>
+            <input id="input-name" type="text" required placeholder="Ex: Maria Silva" class="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3 text-sm text-slate-100 focus:border-indigo-500">
           </div>
 
-          <!-- E-mail -->
           <div class="space-y-1">
-            <label for="input-email" class="block text-xs font-semibold text-slate-200">
-              Endereço de E-mail <span class="text-rose-400">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                <i class="fa-solid fa-envelope text-xs"></i>
-              </span>
-              <input id="input-email" type="email" required placeholder="exemplo@email.pt" 
-                     class="w-full rounded-xl bg-slate-900/90 border border-slate-700 pl-9 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500">
-            </div>
+            <label for="input-email" class="text-xs font-semibold text-slate-300">E-mail</label>
+            <input id="input-email" type="email" required placeholder="Ex: mariasilva@exemplo.com" class="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3 text-sm text-slate-100 focus:border-indigo-500">
           </div>
 
-          <!-- Data de Nascimento -->
           <div class="space-y-1">
-            <label for="input-dob" class="block text-xs font-semibold text-slate-200">
-              Data de Nascimento <span class="text-rose-400">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                <i class="fa-solid fa-calendar-days text-xs"></i>
-              </span>
-              <input id="input-dob" type="date" required 
-                     class="w-full rounded-xl bg-slate-900/90 border border-slate-700 pl-9 pr-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 [color-scheme:dark]">
-            </div>
+            <label for="input-dob" class="text-xs font-semibold text-slate-300">Data de Nascimento</label>
+            <input id="input-dob" type="date" required class="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3 text-sm text-slate-100 focus:border-indigo-500">
           </div>
 
-          <!-- Caixa de Termos e Condições (Transparente e Legível) -->
-          <div class="rounded-xl border border-slate-700 bg-slate-900/80 p-4 space-y-2">
+          <!-- Caixa de Termos Legível -->
+          <div class="rounded-xl border border-slate-800 bg-slate-950/50 p-4 space-y-3">
             <div class="flex items-start gap-3">
-              <input id="terms-check" type="checkbox" required
-                     class="mt-0.5 h-4 w-4 rounded border-slate-600 bg-slate-800 text-brand-600 focus:ring-brand-500 cursor-pointer">
-              <label for="terms-check" class="text-xs font-medium text-slate-200 leading-snug cursor-pointer">
-                Aceito os <a href="#" class="text-brand-400 hover:underline font-bold">Termos de Utilização</a> e a <a href="#" class="text-brand-400 hover:underline font-bold">Política de Privacidade</a>.
+              <input id="terms-check" type="checkbox" required class="mt-1 h-4 w-4 rounded bg-slate-900 border-slate-700 accent-indigo-600">
+              <label for="terms-check" class="text-xs text-slate-300 leading-relaxed cursor-pointer">
+                Li e aceito os <strong class="text-indigo-300">Termos e Condições de Serviço</strong> e a Política de Privacidade. Compreendo que os dados fornecidos serão processados para a elaboração do meu relatório de perfil.
               </label>
             </div>
-            <p class="text-[11px] text-slate-400 leading-relaxed pl-7">
-              Ao submeter, autorizas o processamento dos dados introduzidos (Nome, E-mail e Data de Nascimento) estritamente para a geração e apresentação do teu resultado de personalidade do PersonaMatch.
-            </p>
           </div>
 
-          <!-- Botão Ver Resultado -->
-          <button type="submit" class="w-full primary-btn rounded-xl py-3 font-bold text-sm text-white flex items-center justify-center gap-2">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-            <span>Ver Resultado</span>
-          </button>
-
+          <button type="submit" class="w-full primary-btn rounded-xl py-4 font-bold text-base"><i class="fa-solid fa-chart-pie mr-2"></i>Ver Resultado</button>
         </form>
       </div>
     </section>
 
-    <!-- 3. RESULT SECTION -->
-    <section id="result-section" class="hidden space-y-6">
-      <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-6 text-center border-brand-500/30 shadow-2xl">
-        
-        <span class="inline-block px-4 py-1.5 rounded-full bg-brand-950 border border-brand-500/40 text-brand-300 text-xs font-extrabold uppercase tracking-widest">
-          O teu Resultado
-        </span>
-
-        <div class="space-y-3">
-          <div id="res-icon" class="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br from-brand-600 to-purple-600 flex items-center justify-center text-5xl shadow-lg border-2 border-brand-400/30">
-            🌟
-          </div>
-          <h2 id="res-title" class="text-3xl font-black text-white"></h2>
-          <p id="res-subtitle" class="text-sm font-semibold text-brand-400"></p>
+    <!-- Vista de Resultado Final -->
+    <section id="result-view" class="hidden space-y-6">
+      <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 text-center">
+        <span class="inline-block rounded-full bg-indigo-950 border border-indigo-700/60 px-4 py-1.5 text-xs font-bold text-indigo-300 uppercase">Resultado Calculado</span>
+        <div class="w-24 h-24 mx-auto rounded-2xl bg-indigo-900/60 border border-indigo-400/30 flex items-center justify-center text-5xl" id="res-icon">👑</div>
+        <div class="space-y-1">
+          <h3 id="res-name" class="text-3xl font-extrabold"></h3>
+          <p id="res-title" class="text-sm font-medium text-indigo-300"></p>
         </div>
-
-        <p id="res-description" class="rounded-2xl bg-slate-950/50 border border-slate-800 p-4 text-xs sm:text-sm text-slate-300 leading-relaxed text-left"></p>
-
-        <!-- Traços de Personalidade -->
-        <div class="space-y-3 text-left">
-          <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Traços Principais:</h4>
-          <div id="res-tags" class="flex flex-wrap gap-2"></div>
-        </div>
-
-        <button id="restart-btn" type="button" class="w-full primary-btn rounded-xl py-3 font-bold text-xs text-white flex items-center justify-center gap-2">
-          <i class="fa-solid fa-rotate-left"></i>
-          <span>Repetir Quiz</span>
-        </button>
-
+        <p id="res-desc" class="rounded-2xl border border-slate-800 bg-slate-950/40 p-5 text-sm text-slate-300 leading-relaxed text-left"></p>
+        <button id="restart-btn" type="button" class="rounded-xl glass px-6 py-3 font-semibold hover:bg-slate-800 text-sm"><i class="fa-solid fa-rotate-left mr-2"></i>Repetir Teste</button>
       </div>
     </section>
-
   </main>
 
-  <!-- JAVASCRIPT LOGIC -->
-  <script>
-    (() => {
-      'use strict';
+<script>
+(() => {
+  'use strict';
 
-      // 4 Perguntas Rápidas
-      const QUESTIONS = [
-        {
-          category: 'Estilo de Vida',
-          title: 'Como preferes passar um dia livre?',
-          options: [
-            { text: 'A explorar novos sítios e em eventos sociais.', trait: 'extrovert' },
-            { text: 'Tranquilo em casa com livros, jogos ou filmes.', trait: 'introvert' },
-            { text: 'A praticar desporto ou atividades ao ar livre.', trait: 'action' },
-            { text: 'A criar, desenhar, escrever ou produzir algo.', trait: 'creative' }
-          ]
-        },
-        {
-          category: 'Tomada de Decisão',
-          title: 'Quando enfrentas um problema difícil, qual é o teu reflexo?',
-          options: [
-            { text: 'Analisar dados e factos de forma lógica.', trait: 'introvert' },
-            { text: 'Conversar com amigos para ouvir diferentes pontos de vista.', trait: 'extrovert' },
-            { text: 'Agir imediatamente com a primeira solução prática.', trait: 'action' },
-            { text: 'Procurar uma alternativa original e inovadora.', trait: 'creative' }
-          ]
-        },
-        {
-          category: 'Trabalho & Projetos',
-          title: 'Que papel assumes mais facilmente num grupo?',
-          options: [
-            { text: 'O líder motivador que comunica com todos.', trait: 'extrovert' },
-            { text: 'O especialista focado nos detalhes técnicos.', trait: 'introvert' },
-            { text: 'O executor que garante que o trabalho é feito rapidamente.', trait: 'action' },
-            { text: 'O visionário que traz ideias fora da caixa.', trait: 'creative' }
-          ]
-        },
-        {
-          category: 'Motivação',
-          title: 'O que te dá maior satisfação pessoal?',
-          options: [
-            { text: 'Conectar com pessoas e construir amizades.', trait: 'extrovert' },
-            { text: 'Alcançar um conhecimento profundo sobre um tema.', trait: 'introvert' },
-            { text: 'Superar desafios difíceis e vencer metas.', trait: 'action' },
-            { text: 'Expressar a minha individualidade e criar algo único.', trait: 'creative' }
-          ]
-        }
-      ];
+  const QUESTIONS = [
+    {
+      category: 'Estilo de Vida',
+      text: 'Como preferes passar um final de tarde livre?',
+      options: [
+        { text: 'A praticar desporto ou atividade física.', char: 'cronaldo' },
+        { text: 'Em casa a ver um bom filme ou a ler.', char: 'keanu' },
+        { text: 'A explorar um jogo com boa história.', char: 'geralt' },
+        { text: 'A compor, escrever ou dedicar-me a projetos criativos.', char: 'taylor' }
+      ]
+    },
+    {
+      category: 'Tomada de Decisões',
+      text: 'Perante um desafio imprevisto, qual é o teu primeiro instinto?',
+      options: [
+        { text: 'Focar na disciplina e dar o máximo para superar.', char: 'cronaldo' },
+        { text: 'Manter a calma e ajudar quem precisa.', char: 'keanu' },
+        { text: 'Analisar a situação de forma prática e direta.', char: 'geralt' },
+        { text: 'Procurar uma solução criativa e fora da caixa.', char: 'taylor' }
+      ]
+    },
+    {
+      category: 'Relações',
+      text: 'Num grupo, como gostas de ser reconhecido?',
+      options: [
+        { text: 'Pelo empenho, liderança e resultados.', char: 'cronaldo' },
+        { text: 'Pela empatia e respeito pelos outros.', char: 'keanu' },
+        { text: 'Pela independência e lealdade nas ações.', char: 'geralt' },
+        { text: 'Pelas ideias originais e visão única.', char: 'taylor' }
+      ]
+    },
+    {
+      category: 'Motivação',
+      text: 'O que te faz continuar a evoluir todos os dias?',
+      options: [
+        { text: 'Provar a mim mesmo que posso ser o melhor.', char: 'cronaldo' },
+        { text: 'Contribuir para um ambiente mais harmonioso.', char: 'keanu' },
+        { text: 'Resolver os problemas práticos um a um.', char: 'geralt' },
+        { text: 'Expressar a minha visão e inspirar pessoas.', char: 'taylor' }
+      ]
+    }
+  ];
 
-      // Perfis de Resultado
-      const PROFILES = {
-        extrovert: {
-          title: 'O Conectador Social',
-          subtitle: 'Energético, Comunicativo e Empático',
-          icon: '🤝',
-          description: 'És impulsionado pelas interações humanas e pela energia dos ambientes sociais. Destacas-te na comunicação, sabes motivar quem te rodeia e preferes trabalhar em equipa.',
-          tags: ['Extrovertido', 'Comunicativo', 'Carismático', 'Empático']
-        },
-        introvert: {
-          title: 'O Analista Estratégico',
-          subtitle: 'Racional, Observador e Focado',
-          icon: '🧠',
-          description: 'Possuis uma mente analítica e reflexiva. Preferes aprofundar temas com calma e tomar decisões baseadas em lógica e observação antes de agir.',
-          tags: ['Analítico', 'Reservado', 'Focado', 'Metódico']
-        },
-        action: {
-          title: 'O Executante Determinado',
-          subtitle: 'Enérgico, Prático e Orientado a Objetivos',
-          icon: '⚡',
-          description: 'A tua força reside na ação direta e na capacidade de superação. Não perdes tempo com indecisões e focas-te em obter resultados concretos e rápidos.',
-          tags: ['Determinado', 'Prático', 'Resiliente', 'Competitivo']
-        },
-        creative: {
-          title: 'O Criador Inovador',
-          subtitle: 'Visionário, Original e Expressivo',
-          icon: '🎨',
-          description: 'Vês o mundo através de uma lente cheia de possibilidades. Adoras resolver problemas de forma não convencional e expressar a tua visão única.',
-          tags: ['Criativo', 'Visionário', 'Autêntico', 'Inovador']
-        }
-      };
+  const CHARACTERS = {
+    cronaldo: { name: 'Cristiano Ronaldo', title: 'O Perfeccionista Imparável', icon: '⚽', desc: 'Destacas-te pela imensa dedicação, ambição e foco nos objetivos. Gostas de acompanhar a tua evolução e dar sempre o melhor de ti.' },
+    keanu: { name: 'Keanu Reeves', title: 'O Humilde e Empático', icon: '🕶️', desc: 'Valorizas a simplicidade, o respeito e as relações genuínas. A tua maior força reside na compaixão e na serenidade.' },
+    geralt: { name: 'Geralt de Rívia', title: 'O Solitário Prático', icon: '⚔️', desc: 'És pragmático, direto e leal. Preferes resolver os problemas com clareza e seguir os teus próprios princípios.' },
+    taylor: { name: 'Taylor Swift', title: 'A Criativa Estratégica', icon: '✨', desc: 'Tens imaginação viva e uma forte capacidade de expressão. Transformas experiências em ideias e projetos memoráveis.' }
+  };
 
-      // Estado da Aplicação
-      let currentStep = 0;
-      let selectedAnswers = [];
+  let currentIndex = 0;
+  let answers = Array(QUESTIONS.length).fill(null);
 
-      // Seletores DOM
-      const $ = id => document.getElementById(id);
+  const $ = id => document.getElementById(id);
 
-      function renderQuestion() {
-        const q = QUESTIONS[currentStep];
-        const total = QUESTIONS.length;
-        const percent = Math.round(((currentStep + 1) / total) * 100);
+  function renderQuestion() {
+    const q = QUESTIONS[currentIndex];
+    const total = QUESTIONS.length;
+    const percent = Math.round(((currentIndex + 1) / total) * 100);
 
-        $('progress-text').textContent = `Pergunta ${currentStep + 1} de ${total}`;
-        $('progress-percent').textContent = `${percent}%`;
-        $('progress-fill').style.width = `${percent}%`;
+    $('progress-label').textContent = `Pergunta ${currentIndex + 1} de ${total}`;
+    $('progress-percent').textContent = `${percent}%`;
+    $('progress-fill').style.width = `${percent}%`;
+    $('question-category').textContent = q.category;
+    $('question-text').textContent = q.text;
 
-        $('question-category').textContent = q.category;
-        $('question-title').textContent = q.title;
+    const container = $('options-container');
+    container.replaceChildren();
 
-        const container = $('options-container');
-        container.innerHTML = '';
+    q.options.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'answer w-full rounded-2xl p-4 text-left flex items-center gap-4 text-sm font-medium';
+      btn.setAttribute('aria-pressed', String(answers[currentIndex] === idx));
 
-        q.options.forEach((opt, idx) => {
-          const isSelected = selectedAnswers[currentStep] === idx;
-          const letter = String.fromCharCode(65 + idx);
+      const marker = document.createElement('span');
+      marker.className = 'w-7 h-7 shrink-0 rounded-full border border-slate-600 flex items-center justify-center text-xs font-bold';
+      marker.textContent = answers[currentIndex] === idx ? '✓' : String.fromCharCode(65 + idx);
+      if (answers[currentIndex] === idx) marker.classList.add('bg-indigo-600', 'border-indigo-400');
 
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = `glass-card-interactive w-full text-left p-4 rounded-2xl flex items-center gap-4 transition-all ${
-            isSelected ? 'border-brand-500 bg-brand-950/60 ring-1 ring-brand-500' : ''
-          }`;
+      const label = document.createElement('span');
+      label.textContent = opt.text;
 
-          btn.innerHTML = `
-            <div class="w-8 h-8 rounded-xl shrink-0 font-extrabold text-xs flex items-center justify-center ${
-              isSelected ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-300 border border-slate-700'
-            }">
-              ${isSelected ? '<i class="fa-solid fa-check"></i>' : letter}
-            </div>
-            <span class="text-sm font-medium text-slate-100">${opt.text}</span>
-          `;
-
-          btn.addEventListener('click', () => {
-            selectedAnswers[currentStep] = idx;
-            renderQuestion();
-          });
-
-          container.appendChild(btn);
-        });
-
-        $('prev-btn').disabled = currentStep === 0;
-        $('next-btn').disabled = selectedAnswers[currentStep] === undefined;
-      }
-
-      function calculateAndShowResult() {
-        const traitCounts = { extrovert: 0, introvert: 0, action: 0, creative: 0 };
-
-        selectedAnswers.forEach((ansIdx, qIdx) => {
-          const trait = QUESTIONS[qIdx].options[ansIdx].trait;
-          traitCounts[trait]++;
-        });
-
-        let dominantTrait = 'extrovert';
-        let maxCount = -1;
-
-        Object.keys(traitCounts).forEach(trait => {
-          if (traitCounts[trait] > maxCount) {
-            maxCount = traitCounts[trait];
-            dominantTrait = trait;
-          }
-        });
-
-        const profile = PROFILES[dominantTrait];
-
-        $('res-icon').textContent = profile.icon;
-        $('res-title').textContent = profile.title;
-        $('res-subtitle').textContent = profile.subtitle;
-        $('res-description').textContent = profile.description;
-
-        const tagsContainer = $('res-tags');
-        tagsContainer.innerHTML = '';
-        profile.tags.forEach(t => {
-          const badge = document.createElement('span');
-          badge.className = 'px-3 py-1 rounded-full bg-brand-950 border border-brand-500/30 text-brand-300 text-xs font-semibold';
-          badge.textContent = `#${t}`;
-          tagsContainer.appendChild(badge);
-        });
-
-        $('form-section').classList.add('hidden');
-        $('result-section').classList.remove('hidden');
-      }
-
-      // Event Listeners
-      $('next-btn').addEventListener('click', () => {
-        if (currentStep < QUESTIONS.length - 1) {
-          currentStep++;
-          renderQuestion();
-        } else {
-          $('quiz-section').classList.add('hidden');
-          $('form-section').classList.remove('hidden');
-        }
-      });
-
-      $('prev-btn').addEventListener('click', () => {
-        if (currentStep > 0) {
-          currentStep--;
-          renderQuestion();
-        }
-      });
-
-      $('user-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        calculateAndShowResult();
-      });
-
-      $('restart-btn').addEventListener('click', () => {
-        currentStep = 0;
-        selectedAnswers = [];
-        $('user-form').reset();
-        $('result-section').classList.add('hidden');
-        $('quiz-section').classList.remove('hidden');
+      btn.append(marker, label);
+      btn.addEventListener('click', () => {
+        answers[currentIndex] = idx;
         renderQuestion();
       });
+      container.appendChild(btn);
+    });
 
-      // Init
+    $('prev-btn').disabled = currentIndex === 0;
+    $('next-btn').disabled = answers[currentIndex] === null;
+    $('next-btn').innerHTML = currentIndex === total - 1
+      ? 'Concluir <i class="fa-solid fa-check ml-2"></i>'
+      : 'Próxima <i class="fa-solid fa-arrow-right ml-2"></i>';
+  }
+
+  $('next-btn').addEventListener('click', () => {
+    if (currentIndex < QUESTIONS.length - 1) {
+      currentIndex++;
       renderQuestion();
+    } else {
+      $('quiz-view').classList.add('hidden');$('form-view').classList.remove('hidden');
+    }
+  });
 
-    })();
-  </script>
+  $('prev-btn').addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderQuestion();
+    }
+  });
+
+  $('user-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const counts = {};
+    answers.forEach((ansIdx, qIdx) => {
+      const char = QUESTIONS[qIdx].options[ansIdx].char;
+      counts[char] = (counts[char] || 0) + 1;
+    });
+
+    let topChar = 'cronaldo';
+    let max = 0;
+    Object.keys(counts).forEach(c => {
+      if (counts[c] > max) { max = counts[c]; topChar = c; }
+    });
+
+    const result = CHARACTERS[topChar];
+    $('res-icon').textContent = result.icon;
+    $('res-name').textContent = result.name;
+    $('res-title').textContent = result.title;
+    $('res-desc').textContent = result.desc;
+
+    $('form-view').classList.add('hidden');$('result-view').classList.remove('hidden');
+  });
+
+  $('restart-btn').addEventListener('click', () => {
+    currentIndex = 0;
+    answers = Array(QUESTIONS.length).fill(null);
+    $('result-view').classList.add('hidden');$('quiz-view').classList.remove('hidden');
+    renderQuestion();
+  });
+
+  renderQuestion();
+})();
+</script>
 </body>
 </html>
